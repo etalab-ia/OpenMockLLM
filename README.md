@@ -53,7 +53,7 @@ curl -N -X POST http://localhost:8000/v1/chat/completions \
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
-| `--backend` | str | **required** | Backend to use: `vllm` or `mistral` |
+| `--backend` | str | `vllm` | Backend to use: `vllm` or `mistral` |
 | `--port` | int | `8000` | Port to run the server on |
 | `--max-context` | int | `128000` | Maximum context length |
 | `--owned-by` | str | `OpenMockLLM` | Owner of the API |
