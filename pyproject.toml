@@ -1,36 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "openmockllm"
 version = "0.1.0"
-description = "OpenMockLLM - FastAPI Mock LLM API Server"
+description = "OpenMockLLM - FastAPI Mock LLM API Server supporting vLLM, Mistral, and TEI backends"
+readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
+authors = [
+    { name = "Votre Nom", email = "votre.email@example.com" }
+]
+keywords = ["llm", "mock", "api", "fastapi", "vllm", "mistral", "tei", "openai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Testing :: Mocking",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+]
+
 dependencies = [
     "fastapi>=0.117.0",
     "uvicorn[standard]>=0.37.0",
     "pydantic>=2.10.0",
     "faker",
-    "tiktoken"
-
+    "tiktoken",
 ]
 
 [project.optional-dependencies]
 dev = [
     "ruff>=0.6.0",
     "pre-commit>=4.0.0",
+    "pytest>=7.0.0",
+    "httpx>=0.24.0",  # Pour tester l'API FastAPI
 ]
 
 [project.scripts]
 openmockllm = "openmockllm.main:main"
 
-[tool.setuptools]
-py-modules = []
+[project.urls]
+Homepage = "https://github.com/etalab-ia/OpenMockLLM"
+Documentation = "https://github.com/etalab-ia/OpenMockLLM#readme"
+Repository = "https://github.com/etalab-ia/OpenMockLLM"
+Issues = "https://github.com/etalab-ia/OpenMockLLM/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["openmockllm*"]
+exclude = ["tests*", "docs*"]
 
 [tool.ruff]
 line-length = 150
-exclude = []
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
 
 [tool.ruff.lint]
-ignore = ["F403", "F841"]  # import * and never used variables
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+]
+ignore = [
+    "F403",  # import * 
+    "F841",  # never used variables
+]
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
@@ -39,3 +86,8 @@ known-first-party = ["openmockllm"]
 [tool.ruff.lint.isort.sections]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"

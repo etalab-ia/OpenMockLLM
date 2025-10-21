@@ -12,8 +12,14 @@ logger = init_logger("openmockllm")
 def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="OpenMockLLM - Mock LLM API Server")
-    parser.add_argument("--backend", type=str, choices=["vllm", "mistral", "tei"], default="vllm", help="Backend to use (vllm, mistral, or tei)")
+
+    # FastAPI arguments
+    parser.add_argument("--host", type=str, default="0.0.0.0", help="Host to run the server on (default: 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8000, help="Port to run the server on (default: 8000)")
+    parser.add_argument("--reload", action="store_true", help="Reload the server on code changes (default: False)")
+
+    # Common arguments
+    parser.add_argument("--backend", type=str, choices=["vllm", "mistral", "tei"], default="vllm", help="Backend to use (vllm, mistral, or tei)")
     parser.add_argument("--max-context", type=int, default=128000, help="Maximum context length (default: 128000)")
     parser.add_argument("--owned-by", type=str, default="OpenMockLLM", help="Owner of the API (default: OpenMockLLM)")
     parser.add_argument("--model-name", type=str, default="openmockllm", help="Model name to return (default: openmockllm)")
@@ -138,10 +144,10 @@ def main():
 
     app = create_app(args)
 
-    logger.info(f"Starting server on http://0.0.0.0:{args.port}")
-    logger.info(f"API documentation: http://0.0.0.0:{args.port}/docs")
+    logger.info(f"Starting server on http://{args.host}:{args.port}")
+    logger.info(f"API documentation: http://{args.host}:{args.port}/docs")
 
-    uvicorn.run(app, host="0.0.0.0", port=args.port)
+    uvicorn.run(app, host=args.host, port=args.port, reload=args.reload)
 
 
 if __name__ == "__main__":
