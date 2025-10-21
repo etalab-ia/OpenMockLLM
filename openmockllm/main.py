@@ -19,9 +19,9 @@ def parse_args():
     parser.add_argument("--model-name", type=str, default="openmockllm", help="Model name to return (default: openmockllm)")
     parser.add_argument("--embedding-dimension", type=int, default=1024, help="Embedding dimension (default: 1024)")
     parser.add_argument("--api-key", type=str, default=None, help="API key for authentication (optional)")
-    parser.add_argument("--tiktoken-encoder", type=str, default="cl100k_base", help="Tiktoken encoder")
-    parser.add_argument("--faker-langage", type=str, default="fr_FR", help="Langage used for generating prompt responses")
-    parser.add_argument("--faker-seed-instance", type=str, default=None, help="Seed for Faker generation")
+    parser.add_argument("--tiktoken-encoder", type=str, default="cl100k_base", help="Tiktoken encoder (default: cl100k_base)")
+    parser.add_argument("--faker-langage", type=str, default="fr_FR", help="Langage used for generating prompt responses (default: fr_FR)")
+    parser.add_argument("--faker-seed", type=int, default=None, help="Seed for Faker generation (optional)")
 
     return parser.parse_args()
 
@@ -34,8 +34,8 @@ def create_app(args):
         settings.tiktoken_encoder = args.tiktoken_encoder
     if args.faker_langage:
         settings.faker_langage = args.faker_langage
-    if args.faker_seed_instance:
-        settings.faker_seed_instance = args.faker_seed_instance
+    if args.faker_seed:
+        settings.faker_seed = args.faker_seed
 
     app = FastAPI(
         title="OpenMockLLM API",
@@ -90,15 +90,15 @@ def main():
     logger.info("=" * 60)
     logger.info("OpenMockLLM API Server")
     logger.info("=" * 60)
-    logger.info(f"Backend:                  {args.backend}")
-    logger.info(f"Port:                     {args.port}")
-    logger.info(f"Max Context:              {args.max_context}")
-    logger.info(f"Owned By:                 {args.owned_by}")
-    logger.info(f"Model Name:               {args.model_name}")
-    logger.info(f"API Key:                  {'Enabled' if args.api_key else 'Disabled'}")
-    logger.info(f"Tiktoken encoder:         {args.tiktoken_encoder}")
-    logger.info(f"Faker langage:            {args.faker_langage}")
-    logger.info(f"Faker seed instance:      {args.faker_seed_instance if args.faker_seed_instance else 'Disabled'}")
+    logger.info(f"Backend:          {args.backend}")
+    logger.info(f"Port:             {args.port}")
+    logger.info(f"Max Context:      {args.max_context}")
+    logger.info(f"Owned By:         {args.owned_by}")
+    logger.info(f"Model Name:       {args.model_name}")
+    logger.info(f"API Key:          {'Enabled' if args.api_key else 'Disabled'}")
+    logger.info(f"Tiktoken encoder: {args.tiktoken_encoder}")
+    logger.info(f"Faker langage:    {args.faker_langage}")
+    logger.info(f"Faker seed:       {args.faker_seed if args.faker_seed else 'Disabled'}")
     logger.info("=" * 60)
 
     app = create_app(args)

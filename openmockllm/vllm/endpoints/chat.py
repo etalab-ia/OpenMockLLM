@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 
 from openmockllm.logger import init_logger
 from openmockllm.security import check_api_key
-from openmockllm.vllm.exceptions import NotFoundError
+from openmockllm.vllm.exceptions import BadRequestError, NotFoundError
 from openmockllm.vllm.schemas.chat import (
     ChatRequest,
     ChatResponse,
@@ -15,7 +15,13 @@ from openmockllm.vllm.schemas.chat import (
     Message,
     Usage,
 )
-from openmockllm.vllm.utils.chat import calculate_realistic_delay, count_tokens, generate_random_response, generate_stream_response
+from openmockllm.vllm.utils.chat import (
+    calculate_realistic_delay,
+    check_max_context_length,
+    count_tokens,
+    generate_random_response,
+    generate_stream_response,
+)
 
 logger = init_logger(__name__)
 router = APIRouter(prefix="/v1", tags=["chat"])
@@ -26,13 +32,14 @@ async def chat_completions(request: Request, body: ChatRequest):
     """Handle chat completion requests with streaming and non-streaming support"""
     request_id = f"chatcmpl-{uuid.uuid4().hex}"
 
-    # Use the model from the request or fall back to the default
     model = body.model or request.app.state.model_name
-
-    # Validate model if specified
-    if body.model and body.model != request.app.state.model_name:
+    if model != request.app.state.model_name:
         raise NotFoundError(f"The model `{body.model}` does not exist.")
     last_message = body.messages[-1].content if body.messages else ""
+
+    if not check_max_context_length(prompt=[msg.content for msg in body.messages], max_context_length=request.app.state.max_context_length):
+        raise BadRequestError("The context length is too long.")
+
     simulated_response = generate_random_response(last_message, body.temperature, body.max_tokens)
 
     if body.stream:

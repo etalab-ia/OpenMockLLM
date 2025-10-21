@@ -8,13 +8,19 @@ import uuid
 from faker import Faker
 import tiktoken
 
-tokenizer = tiktoken.get_encoding("cl100k_base")
-fake = Faker("fr_FR")
-fake.seed_instance()
+from openmockllm.settings import settings
+
+tokenizer = tiktoken.get_encoding(settings.tiktoken_encoder)
+fake = Faker(settings.faker_langage)
+fake.seed_instance(settings.faker_seed)
 
 
 def count_tokens(text: str) -> int:
     return len(tokenizer.encode(text))
+
+
+def check_max_context_length(prompt: str, max_context_length: int) -> int:
+    return len(tokenizer.encode(prompt)) <= max_context_length
 
 
 def generate_random_response(user_message: str, temperature: Optional[float] = 0.7, max_tokens: Optional[int] = 1000) -> str:
