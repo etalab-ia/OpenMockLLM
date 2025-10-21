@@ -33,8 +33,6 @@ async def chat_completions(request: Request, body: ChatRequest):
     if body.model and body.model != request.app.state.model_name:
         raise NotFoundError(f"The model `{body.model}` does not exist.")
     last_message = body.messages[-1].content if body.messages else ""
-    print(body.max_tokens)
-    print("--------------")
     simulated_response = generate_random_response(last_message, body.temperature, body.max_tokens)
 
     if body.stream:

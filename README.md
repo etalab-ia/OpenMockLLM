@@ -40,6 +40,15 @@ python -m openmockllm.main \
   --model-name "my-custom-model"
 ```
 
+### Test chat
+
+```
+curl -N -X POST http://localhost:8000/v1/chat/completions \
+ -H "Content-Type: application/json" \
+ -d '{ "model": "openmockllm", "messages": [{"role": "user", "content": "Bonjour"}], "stream": true }'
+```
+
+
 ### Command-Line Arguments
 
 | Argument | Type | Default | Description |
@@ -50,6 +59,10 @@ python -m openmockllm.main \
 | `--owned-by` | str | `OpenMockLLM` | Owner of the API |
 | `--model-name` | str | `openmockllm` | Model name to return in responses |
 | `--embedding-dimension` | int | `1024` | Embedding dimension |
+| `--api-key` | str | `None` | API key for authentication |
+| `--tiktoken-encoder` | str | `cl100k_base` | Tiktoken encoder |
+| `--faker-langage` | str | `fr_FR` | Langage used for generating prompt responses |
+| `--faker-seed-instance` | str | `None` | Seed for Faker generation |
 
 ## Contributing
 
