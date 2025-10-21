@@ -8,7 +8,7 @@ logger = init_logger(__name__)
 
 
 class ErrorResponse(BaseModel):
-    """Error response schema matching vLLM API"""
+    """Error response schema matching mistral API"""
 
     object: str = "error"
     message: str
@@ -17,8 +17,8 @@ class ErrorResponse(BaseModel):
     code: int
 
 
-class VLLMException(HTTPException):
-    """Base exception for vLLM API errors"""
+class MistralException(HTTPException):
+    """Base exception for mistral API errors"""
 
     def __init__(
         self,
@@ -32,7 +32,7 @@ class VLLMException(HTTPException):
         self.param = param
 
 
-class BadRequestError(VLLMException):
+class BadRequestError(MistralException):
     """400 Bad Request"""
 
     def __init__(self, message: str, param: str | None = None):
@@ -44,7 +44,7 @@ class BadRequestError(VLLMException):
         )
 
 
-class NotFoundError(VLLMException):
+class NotFoundError(MistralException):
     """404 Not Found"""
 
     def __init__(self, message: str, param: str | None = None):
@@ -56,7 +56,7 @@ class NotFoundError(VLLMException):
         )
 
 
-class InternalServerError(VLLMException):
+class InternalServerError(MistralException):
     """500 Internal Server Error"""
 
     def __init__(self, message: str, param: str | None = None):
@@ -68,21 +68,9 @@ class InternalServerError(VLLMException):
         )
 
 
-class NotImplementedError(VLLMException):
-    """501 Not Implemented"""
-
-    def __init__(self, message: str, param: str | None = None):
-        super().__init__(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            message=message,
-            error_type="NotImplementedError",
-            param=param,
-        )
-
-
-async def vllm_exception_handler(request: Request, exc: VLLMException) -> JSONResponse:
-    """Handle vLLM exceptions and return proper error response"""
-    logger.error(f"VLLMException: {exc.error_type} - {exc.detail} (status: {exc.status_code})")
+async def mistral_exception_handler(request: Request, exc: MistralException) -> JSONResponse:
+    """Handle mistral exceptions and return proper error response"""
+    logger.error(f"MistralException: {exc.error_type} - {exc.detail} (status: {exc.status_code})")
 
     error_response = ErrorResponse(
         message=exc.detail,

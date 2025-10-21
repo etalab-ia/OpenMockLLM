@@ -25,10 +25,10 @@ pip install -e ".[dev]"
 Run the server with the desired backend:
 
 ```bash
-# Using vLLM backend
+# Using vllm backend
 python -m openmockllm.main --backend vllm --port 8000
 
-# Using Mistral backend
+# Using mistral backend
 python -m openmockllm.main --backend mistral --port 8001
 
 # With custom configuration

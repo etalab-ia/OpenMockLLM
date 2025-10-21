@@ -1,9 +1,10 @@
 import argparse
 
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
 
 from openmockllm.logging import init_logger
+from openmockllm.settings import settings
 
 logger = init_logger("openmockllm")
 
@@ -18,22 +19,27 @@ def parse_args():
     parser.add_argument("--model-name", type=str, default="openmockllm", help="Model name to return (default: openmockllm)")
     parser.add_argument("--embedding-dimension", type=int, default=1024, help="Embedding dimension (default: 1024)")
     parser.add_argument("--api-key", type=str, default=None, help="API key for authentication (optional)")
+    parser.add_argument("--tiktoken-encoder", type=str, default="cl100k_base", help="Tiktoken encoder")
+    parser.add_argument("--faker-langage", type=str, default="fr_FR", help="Langage used for generating prompt responses")
+    parser.add_argument("--faker-seed-instance", type=str, default=None, help="Seed for Faker generation")
 
     return parser.parse_args()
 
 
 def create_app(args):
     """Create and configure FastAPI application"""
-    # Configure API key if provided
     if args.api_key:
-        from openmockllm.security import settings
-
         settings.api_key = args.api_key
-        logger.info("API key authentication enabled")
+    if args.tiktoken_encoder:
+        settings.tiktoken_encoder = args.tiktoken_encoder
+    if args.faker_langage:
+        settings.faker_langage = args.faker_langage
+    if args.faker_seed_instance:
+        settings.faker_seed_instance = args.faker_seed_instance
 
     app = FastAPI(
         title="OpenMockLLM API",
-        description="Mock LLM API Server supporting vLLM and Mistral",
+        description="Mock LLM API Server supporting vllm and mistral",
         version="1.0.0",
     )
 
@@ -43,7 +49,6 @@ def create_app(args):
     app.state.owned_by = args.owned_by
     app.state.model_name = args.model_name
     app.state.embedding_dimension = args.embedding_dimension
-    app.state.api_key = args.api_key
 
     # Include routers based on backend
     if args.backend == "vllm":
@@ -59,7 +64,7 @@ def create_app(args):
         app.include_router(models.router)
         app.include_router(embeddings.router)
         app.include_router(health.router)
-        logger.info("Loaded vLLM backend with all endpoints")
+        logger.info("Loaded vllm backend with all endpoints")
 
     elif args.backend == "mistral":
         from openmockllm.mistral.endpoints import chat, embeddings, models
@@ -73,7 +78,7 @@ def create_app(args):
         app.include_router(chat.router)
         app.include_router(models.router)
         app.include_router(embeddings.router)
-        logger.info("Loaded Mistral backend with exception handling")
+        logger.info("Loaded mistral backend with exception handling")
 
     return app
 
@@ -91,6 +96,9 @@ def main():
     logger.info(f"Owned By:     {args.owned_by}")
     logger.info(f"Model Name:   {args.model_name}")
     logger.info(f"API Key:      {'Enabled' if args.api_key else 'Disabled'}")
+    logger.info(f"Tiktoken encoder:      {args.tiktoken_encoder}")
+    logger.info(f"Faker Langage:      {args.faker_langage}")
+    logger.info(f"Faker seed instance:      {args.faker_seed_instance}")
     logger.info("=" * 60)
 
     app = create_app(args)
