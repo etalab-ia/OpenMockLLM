@@ -1,5 +1,5 @@
-from logging import Formatter, Logger, StreamHandler, getLogger
 import sys
+from logging import Formatter, Logger, StreamHandler, getLogger
 
 
 class ColoredFormatter(Formatter):

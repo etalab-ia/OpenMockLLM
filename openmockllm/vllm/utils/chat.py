@@ -1,6 +1,7 @@
 import asyncio
 import json
 import random
+import threading
 import time
 from typing import AsyncGenerator, Optional
 import uuid
@@ -12,6 +13,39 @@ tokenizer = tiktoken.get_encoding("cl100k_base")
 fake = Faker("fr_FR")
 fake.seed_instance()
 
+_active_requests = 0
+_lock = threading.Lock()
+
+def increment_active_requests() -> int:
+    global _active_requests
+    with _lock:
+        _active_requests += 1
+        return _active_requests
+
+
+def decrement_active_requests() -> int:
+    global _active_requests
+    with _lock:
+        _active_requests = max(0, _active_requests - 1)
+        return _active_requests
+
+
+def get_active_requests() -> int:
+    global _active_requests
+    with _lock:
+        return _active_requests
+
+
+def calculate_load_factor() -> float:
+    active = get_active_requests()
+    if active <= 1:
+        return 1.0
+    elif active <= 5:
+        return 1.0 + (active - 1) * 0.2
+    elif active <= 10:
+        return 1.8 + (active - 5) * 0.4
+    else:
+        return 3.8 + (active - 10) * 0.6
 
 def count_tokens(text: str) -> int:
     return len(tokenizer.encode(text))
@@ -53,7 +87,10 @@ def calculate_realistic_delay(completion_tokens: int, temperature: Optional[floa
 
     total_delay = (base_delay + startup_delay) * variation
 
-    return max(0.1, total_delay)
+    load_factor = calculate_load_factor()
+    total_delay *= load_factor
+
+    return total_delay
 
 
 async def generate_stream_response(response_text: str, model: str, temperature: Optional[float] = 0.7) -> AsyncGenerator[str, None]:
