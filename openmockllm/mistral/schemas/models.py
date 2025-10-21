@@ -1,14 +1,15 @@
-from pydantic import BaseModel
 from typing import List
 
+from openmockllm.vllm.schemas.core import VllmBaseModel
 
-class Model(BaseModel):
+
+class Model(VllmBaseModel):
     id: str
     object: str = "model"
     created: int
     owned_by: str
 
 
-class ModelsResponse(BaseModel):
+class ModelsResponse(VllmBaseModel):
     object: str = "list"
     data: List[Model]

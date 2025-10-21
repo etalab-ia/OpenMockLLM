@@ -2,11 +2,11 @@ import asyncio
 import json
 import random
 import time
+from typing import AsyncGenerator, Optional
 import uuid
-from typing import AsyncGenerator
 
-import tiktoken
 from faker import Faker
+import tiktoken
 
 tokenizer = tiktoken.get_encoding("cl100k_base")
 fake = Faker("fr_FR")
@@ -17,9 +17,9 @@ def count_tokens(text: str) -> int:
     return len(tokenizer.encode(text))
 
 
-def generate_random_response(user_message: str, temperature: float = 0.7, max_tokens: int = 1000) -> str:
-    if max_tokens is None:
-        max_tokens = random.randint(100, 1000)
+def generate_random_response(user_message: str, temperature: Optional[float] = 0.7, max_tokens: Optional[int] = 1000) -> str:
+    max_tokens = max_tokens if max_tokens is not None else random.randint(100, 1000)
+    temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
     prompt_token_count = count_tokens(user_message)
 
     base_paragraphs = 1 + temperature * 5
@@ -41,7 +41,8 @@ def generate_random_response(user_message: str, temperature: float = 0.7, max_to
     return "\n\n".join(response_parts)
 
 
-def calculate_realistic_delay(completion_tokens: int, temperature: float = 0.7) -> float:
+def calculate_realistic_delay(completion_tokens: int, temperature: Optional[float] = 0.7) -> float:
+    temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
     tokens_per_second = 35 - (temperature * 10)
 
     base_delay = completion_tokens / tokens_per_second
@@ -55,8 +56,9 @@ def calculate_realistic_delay(completion_tokens: int, temperature: float = 0.7) 
     return max(0.1, total_delay)
 
 
-async def generate_stream_response(response_text: str, model: str, temperature: float = 0.7) -> AsyncGenerator[str, None]:
+async def generate_stream_response(response_text: str, model: str, temperature: Optional[float] = 0.7) -> AsyncGenerator[str, None]:
     chunk_id = f"chatcmpl-{uuid.uuid4().hex[:8]}"
+    temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
     created = int(time.time())
 
     tokens_per_second = 35 - (temperature * 10)

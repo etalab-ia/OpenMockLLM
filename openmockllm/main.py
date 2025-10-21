@@ -1,7 +1,7 @@
 import argparse
 
-import uvicorn
 from fastapi import FastAPI
+import uvicorn
 
 from openmockllm.logging import init_logger
 from openmockllm.settings import settings
@@ -97,8 +97,8 @@ def main():
     logger.info(f"Model Name:   {args.model_name}")
     logger.info(f"API Key:      {'Enabled' if args.api_key else 'Disabled'}")
     logger.info(f"Tiktoken encoder:      {args.tiktoken_encoder}")
-    logger.info(f"Faker Langage:      {args.faker_langage}")
-    logger.info(f"Faker seed instance:      {args.faker_seed_instance}")
+    logger.info(f"Faker langage:      {args.faker_langage}")
+    logger.info(f"Faker seed instance:      {args.faker_seed_instance if args.faker_seed_instance else 'Disabled'}")
     logger.info("=" * 60)
 
     app = create_app(args)
