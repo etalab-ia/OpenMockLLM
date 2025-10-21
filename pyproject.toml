@@ -1,0 +1,39 @@
+[project]
+name = "openmockllm"
+version = "0.1.0"
+description = "OpenMockLLM - FastAPI Mock LLM API Server"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi>=0.117.0",
+    "uvicorn[standard]>=0.37.0",
+    "pydantic>=2.10.0",
+    "lorem-text>=2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6.0",
+    "pre-commit>=4.0.0",
+]
+
+[project.scripts]
+openmockllm = "openmockllm.main:main"
+
+[tool.setuptools]
+py-modules = []
+
+[tool.ruff]
+line-length = 120
+exclude = []
+
+[tool.ruff.lint]
+ignore = ["F403", "F841"]  # import * and never used variables
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["openmockllm"]
+
+[tool.ruff.lint.isort.sections]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
