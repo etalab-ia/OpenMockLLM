@@ -11,43 +11,26 @@ logger = init_logger("openmockllm")
 def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="OpenMockLLM - Mock LLM API Server")
-    parser.add_argument(
-        "--backend",
-        type=str,
-        choices=["vllm", "mistral"],
-        required=True,
-        help="Backend to use (vllm or mistral)",
-    )
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=8000,
-        help="Port to run the server on (default: 8000)",
-    )
-    parser.add_argument(
-        "--max-context",
-        type=int,
-        default=128000,
-        help="Maximum context length (default: 128000)",
-    )
-    parser.add_argument(
-        "--owned-by",
-        type=str,
-        default="OpenMockLLM",
-        help="Owner of the API (default: OpenMockLLM)",
-    )
-    parser.add_argument(
-        "--model-name",
-        type=str,
-        default="openmockllm",
-        help="Model name to return (default: openmockllm)",
-    )
+    parser.add_argument("--backend", type=str, choices=["vllm", "mistral"], required=True, help="Backend to use (vllm or mistral)")
+    parser.add_argument("--port", type=int, default=8000, help="Port to run the server on (default: 8000)")
+    parser.add_argument("--max-context", type=int, default=128000, help="Maximum context length (default: 128000)")
+    parser.add_argument("--owned-by", type=str, default="OpenMockLLM", help="Owner of the API (default: OpenMockLLM)")
+    parser.add_argument("--model-name", type=str, default="openmockllm", help="Model name to return (default: openmockllm)")
+    parser.add_argument("--embedding-dimension", type=int, default=1024, help="Embedding dimension (default: 1024)")
+    parser.add_argument("--api-key", type=str, default=None, help="API key for authentication (optional)")
 
     return parser.parse_args()
 
 
 def create_app(args):
     """Create and configure FastAPI application"""
+    # Configure API key if provided
+    if args.api_key:
+        from openmockllm.security import settings
+
+        settings.api_key = args.api_key
+        logger.info("API key authentication enabled")
+
     app = FastAPI(
         title="OpenMockLLM API",
         description="Mock LLM API Server supporting vLLM and Mistral",
@@ -59,37 +42,38 @@ def create_app(args):
     app.state.max_context = args.max_context
     app.state.owned_by = args.owned_by
     app.state.model_name = args.model_name
+    app.state.embedding_dimension = args.embedding_dimension
+    app.state.api_key = args.api_key
 
     # Include routers based on backend
     if args.backend == "vllm":
-        from openmockllm.vllm.endpoints import chat, embeddings, models
+        from openmockllm.vllm.endpoints import chat, embeddings, health, models
+        from openmockllm.vllm.exceptions import VLLMException, general_exception_handler, vllm_exception_handler
 
-        app.include_router(chat.router, prefix="/v1/chat", tags=["chat"])
-        app.include_router(models.router, prefix="/v1/models", tags=["models"])
-        app.include_router(embeddings.router, prefix="/v1/embeddings", tags=["embeddings"])
-        logger.info("Loaded vLLM backend")
+        # Add exception handlers
+        app.add_exception_handler(VLLMException, vllm_exception_handler)
+        app.add_exception_handler(Exception, general_exception_handler)
+
+        # Add routers (prefixes are defined in the router instances)
+        app.include_router(chat.router)
+        app.include_router(models.router)
+        app.include_router(embeddings.router)
+        app.include_router(health.router)
+        logger.info("Loaded vLLM backend with all endpoints")
 
     elif args.backend == "mistral":
         from openmockllm.mistral.endpoints import chat, embeddings, models
+        from openmockllm.mistral.exceptions import MistralException, general_exception_handler, mistral_exception_handler
 
-        app.include_router(chat.router, prefix="/v1/chat", tags=["chat"])
-        app.include_router(models.router, prefix="/v1/models", tags=["models"])
-        app.include_router(embeddings.router, prefix="/v1/embeddings", tags=["embeddings"])
-        logger.info("Loaded Mistral backend")
+        # Add exception handlers
+        app.add_exception_handler(MistralException, mistral_exception_handler)
+        app.add_exception_handler(Exception, general_exception_handler)
 
-    @app.get("/")
-    async def root():
-        return {
-            "message": "OpenMockLLM API Server",
-            "backend": args.backend,
-            "model": args.model_name,
-            "max_context": args.max_context,
-            "owned_by": args.owned_by,
-        }
-
-    @app.get("/health")
-    async def health():
-        return {"status": "healthy", "backend": args.backend}
+        # Add routers (prefixes are defined in the router instances)
+        app.include_router(chat.router)
+        app.include_router(models.router)
+        app.include_router(embeddings.router)
+        logger.info("Loaded Mistral backend with exception handling")
 
     return app
 
@@ -106,6 +90,7 @@ def main():
     logger.info(f"Max Context:  {args.max_context}")
     logger.info(f"Owned By:     {args.owned_by}")
     logger.info(f"Model Name:   {args.model_name}")
+    logger.info(f"API Key:      {'Enabled' if args.api_key else 'Disabled'}")
     logger.info("=" * 60)
 
     app = create_app(args)

@@ -1,15 +1,16 @@
 import time
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
 from openmockllm.logging import init_logger
+from openmockllm.security import check_api_key
 from openmockllm.vllm.schemas.models import Model, ModelsResponse
 
 logger = init_logger(__name__)
-router = APIRouter()
+router = APIRouter(prefix="/v1", tags=["models"])
 
 
-@router.get("")
+@router.get("/models", dependencies=[Depends(check_api_key)])
 async def list_models(request: Request):
     """List available models"""
     # Get config from app state

@@ -1,7 +1,7 @@
 import random
 import uuid
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
 from openmockllm.logging import init_logger
 from openmockllm.mistral.schemas.embeddings import (
@@ -10,9 +10,10 @@ from openmockllm.mistral.schemas.embeddings import (
     EmbeddingResponse,
     EmbeddingUsage,
 )
+from openmockllm.security import check_api_key
 
 logger = init_logger(__name__)
-router = APIRouter()
+router = APIRouter(prefix="/v1", tags=["embeddings"])
 
 
 def generate_mock_embedding(dimension: int = 1024) -> list[float]:
@@ -20,7 +21,7 @@ def generate_mock_embedding(dimension: int = 1024) -> list[float]:
     return [random.random() for _ in range(dimension)]
 
 
-@router.post("")
+@router.post("/embeddings", dependencies=[Depends(check_api_key)])
 async def create_embeddings(embedding_request: EmbeddingRequest, request: Request):
     """Create embeddings for the input"""
     model = embedding_request.model
@@ -32,9 +33,7 @@ async def create_embeddings(embedding_request: EmbeddingRequest, request: Reques
         inputs = embedding_request.input
 
     # Generate mock embeddings
-    embeddings_data = [
-        EmbeddingData(object="embedding", embedding=generate_mock_embedding(), index=i) for i in range(len(inputs))
-    ]
+    embeddings_data = [EmbeddingData(object="embedding", embedding=generate_mock_embedding(), index=i) for i in range(len(inputs))]
 
     response = EmbeddingResponse(
         id=f"embd-{uuid.uuid4().hex}",

@@ -5,7 +5,7 @@ A FastAPI-based mock LLM API server that simulates multiple Large Language Model
 Supported backends:
 | Backend | Description | Endpoints |
 | --- | --- | --- |
-| vLLM | OpenAI-compatible |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings |
+| vLLM | OpenAI-compatible |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings<br>• /health |
 | Mistral | Mistral AI |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings |
 
 ## Installation
@@ -49,6 +49,7 @@ python -m openmockllm.main \
 | `--max-context` | int | `128000` | Maximum context length |
 | `--owned-by` | str | `OpenMockLLM` | Owner of the API |
 | `--model-name` | str | `openmockllm` | Model name to return in responses |
+| `--embedding-dimension` | int | `1024` | Embedding dimension |
 
 ## Contributing
 

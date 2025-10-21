@@ -24,7 +24,7 @@ openmockllm = "openmockllm.main:main"
 py-modules = []
 
 [tool.ruff]
-line-length = 120
+line-length = 150
 exclude = []
 
 [tool.ruff.lint]
