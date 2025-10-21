@@ -14,6 +14,7 @@ app = FastAPI(title="Mock LLM API", version="1.0.0")
 fake = Faker('fr_FR')
 tokenizer = tiktoken.get_encoding("cl100k_base")
 
+
 class Message(BaseModel):
     role: str
     content: str
@@ -56,15 +57,23 @@ async def root():
 def count_tokens(text: str) -> int:
     return len(tokenizer.encode(text))
 
-def generate_random_response(temperature: float = 0.7, max_tokens: int = 1000) -> str:
-    num_paragraphs = int(3 + temperature * 5)
-    target_length = min(max_tokens * 4, 4000)
+
+def generate_random_response(user_message: str, temperature: float = 0.7, max_tokens: int = 1000) -> str:
+    prompt_token_count = count_tokens(user_message)
+
+    base_paragraphs = 1 + temperature * 5
+    prompt_factor = 1 + (prompt_token_count / 100) * 0.5
+    num_paragraphs = int(base_paragraphs * min(prompt_factor, 2.0))
+
+    base_target = max_tokens * 4
+    adjusted_target = int(base_target * min(prompt_factor, 1.5))
+    target_length = min(adjusted_target, 8000)
 
     response_parts = []
     current_length = 0
 
     while current_length < target_length and len(response_parts) < num_paragraphs:
-        text = fake.paragraph(nb_sentences=random.randint(3, 7))
+        text = fake.paragraph(nb_sentences=random.randint(1, 7))
         response_parts.append(text)
         current_length += len(text)
 
@@ -90,7 +99,10 @@ async def chat_completions(request: ChatCompletionRequest):
     if request.stream:
         raise HTTPException(status_code=400, detail="Streaming non supporté dans cette version mock")
 
+    last_message = request.messages[-1].content if request.messages else ""
+
     simulated_response = generate_random_response(
+        last_message,
         request.temperature,
         request.max_tokens
     )
