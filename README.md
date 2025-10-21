@@ -1,6 +1,6 @@
 # OpenMockLLM
 
-A FastAPI-based mock LLM API server that simulates multiple Large Language Model API providers. Currently supports **vLLM** (OpenAI-compatible) and **Mistral AI** endpoints.
+A FastAPI-based mock LLM API server that simulates multiple Large Language Model API providers.
 
 Supported backends:
 | Backend | Description | Endpoints |

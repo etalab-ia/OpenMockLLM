@@ -15,7 +15,7 @@ from openmockllm.vllm.schemas.chat import (
     Message,
     Usage,
 )
-from openmockllm.vllm.utils.chat import generate_stream_response, generate_random_response, count_tokens, calculate_realistic_delay
+from openmockllm.vllm.utils.chat import calculate_realistic_delay, count_tokens, generate_random_response, generate_stream_response
 
 logger = init_logger(__name__)
 router = APIRouter(prefix="/v1", tags=["chat"])
@@ -25,7 +25,12 @@ router = APIRouter(prefix="/v1", tags=["chat"])
 async def chat_completions(request: Request, body: ChatRequest):
     """Handle chat completion requests with streaming and non-streaming support"""
     request_id = f"chatcmpl-{uuid.uuid4().hex}"
-    if body.model != request.app.state.model_name:
+
+    # Use the model from the request or fall back to the default
+    model = body.model or request.app.state.model_name
+
+    # Validate model if specified
+    if body.model and body.model != request.app.state.model_name:
         raise NotFoundError(f"The model `{body.model}` does not exist.")
     last_message = body.messages[-1].content if body.messages else ""
     print(body.max_tokens)
