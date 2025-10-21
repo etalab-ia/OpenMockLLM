@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 
 logger = init_logger(__name__)
 router = APIRouter(tags=["health"])

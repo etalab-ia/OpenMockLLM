@@ -2,7 +2,7 @@ from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 
 logger = init_logger(__name__)
 

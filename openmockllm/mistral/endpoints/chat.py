@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from lorem_text import lorem
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 from openmockllm.mistral.schemas.chat import (
     ChatResponse,
     ChatResponseChoice,

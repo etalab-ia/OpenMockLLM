@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 from openmockllm.security import check_api_key
 from openmockllm.vllm.exceptions import NotFoundError
 from openmockllm.vllm.schemas.embeddings import (

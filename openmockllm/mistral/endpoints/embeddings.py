@@ -3,7 +3,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, Request
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 from openmockllm.mistral.schemas.embeddings import (
     EmbeddingData,
     EmbeddingRequest,

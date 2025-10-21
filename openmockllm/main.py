@@ -3,7 +3,7 @@ import argparse
 from fastapi import FastAPI
 import uvicorn
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 from openmockllm.settings import settings
 
 logger = init_logger("openmockllm")
@@ -12,7 +12,7 @@ logger = init_logger("openmockllm")
 def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="OpenMockLLM - Mock LLM API Server")
-    parser.add_argument("--backend", type=str, choices=["vllm", "mistral"], required=True, help="Backend to use (vllm or mistral)")
+    parser.add_argument("--backend", type=str, choices=["vllm", "mistral"], default="vllm", help="Backend to use (vllm or mistral)")
     parser.add_argument("--port", type=int, default=8000, help="Port to run the server on (default: 8000)")
     parser.add_argument("--max-context", type=int, default=128000, help="Maximum context length (default: 128000)")
     parser.add_argument("--owned-by", type=str, default="OpenMockLLM", help="Owner of the API (default: OpenMockLLM)")
@@ -90,14 +90,14 @@ def main():
     logger.info("=" * 60)
     logger.info("OpenMockLLM API Server")
     logger.info("=" * 60)
-    logger.info(f"Backend:      {args.backend}")
-    logger.info(f"Port:         {args.port}")
-    logger.info(f"Max Context:  {args.max_context}")
-    logger.info(f"Owned By:     {args.owned_by}")
-    logger.info(f"Model Name:   {args.model_name}")
-    logger.info(f"API Key:      {'Enabled' if args.api_key else 'Disabled'}")
-    logger.info(f"Tiktoken encoder:      {args.tiktoken_encoder}")
-    logger.info(f"Faker langage:      {args.faker_langage}")
+    logger.info(f"Backend:                  {args.backend}")
+    logger.info(f"Port:                     {args.port}")
+    logger.info(f"Max Context:              {args.max_context}")
+    logger.info(f"Owned By:                 {args.owned_by}")
+    logger.info(f"Model Name:               {args.model_name}")
+    logger.info(f"API Key:                  {'Enabled' if args.api_key else 'Disabled'}")
+    logger.info(f"Tiktoken encoder:         {args.tiktoken_encoder}")
+    logger.info(f"Faker langage:            {args.faker_langage}")
     logger.info(f"Faker seed instance:      {args.faker_seed_instance if args.faker_seed_instance else 'Disabled'}")
     logger.info("=" * 60)
 

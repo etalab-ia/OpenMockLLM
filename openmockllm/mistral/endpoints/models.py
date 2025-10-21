@@ -2,7 +2,7 @@ import time
 
 from fastapi import APIRouter, Depends, Request
 
-from openmockllm.logging import init_logger
+from openmockllm.logger import init_logger
 from openmockllm.mistral.schemas.models import Model, ModelsResponse
 from openmockllm.security import check_api_key
 
