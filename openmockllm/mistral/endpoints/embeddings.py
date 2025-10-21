@@ -17,7 +17,7 @@ router = APIRouter(prefix="/v1", tags=["embeddings"])
 
 
 def generate_mock_embedding(dimension: int = 1024) -> list[float]:
-    """Generate a mock embedding vector (Mistral uses 1024 dimensions)"""
+    """Generate a mock embedding vector (mistral uses 1024 dimensions)"""
     return [random.random() for _ in range(dimension)]
 
 

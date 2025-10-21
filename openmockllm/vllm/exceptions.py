@@ -8,7 +8,7 @@ logger = init_logger(__name__)
 
 
 class ErrorResponse(BaseModel):
-    """Error response schema matching Mistral API"""
+    """Error response schema matching vllm API"""
 
     object: str = "error"
     message: str
@@ -17,8 +17,8 @@ class ErrorResponse(BaseModel):
     code: int
 
 
-class MistralException(HTTPException):
-    """Base exception for Mistral API errors"""
+class VLLMException(HTTPException):
+    """Base exception for vllm API errors"""
 
     def __init__(
         self,
@@ -32,7 +32,7 @@ class MistralException(HTTPException):
         self.param = param
 
 
-class BadRequestError(MistralException):
+class BadRequestError(VLLMException):
     """400 Bad Request"""
 
     def __init__(self, message: str, param: str | None = None):
@@ -44,7 +44,7 @@ class BadRequestError(MistralException):
         )
 
 
-class NotFoundError(MistralException):
+class NotFoundError(VLLMException):
     """404 Not Found"""
 
     def __init__(self, message: str, param: str | None = None):
@@ -56,7 +56,7 @@ class NotFoundError(MistralException):
         )
 
 
-class InternalServerError(MistralException):
+class InternalServerError(VLLMException):
     """500 Internal Server Error"""
 
     def __init__(self, message: str, param: str | None = None):
@@ -68,9 +68,21 @@ class InternalServerError(MistralException):
         )
 
 
-async def mistral_exception_handler(request: Request, exc: MistralException) -> JSONResponse:
-    """Handle Mistral exceptions and return proper error response"""
-    logger.error(f"MistralException: {exc.error_type} - {exc.detail} (status: {exc.status_code})")
+class NotImplementedError(VLLMException):
+    """501 Not Implemented"""
+
+    def __init__(self, message: str, param: str | None = None):
+        super().__init__(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            message=message,
+            error_type="NotImplementedError",
+            param=param,
+        )
+
+
+async def vllm_exception_handler(request: Request, exc: VLLMException) -> JSONResponse:
+    """Handle vllm exceptions and return proper error response"""
+    logger.error(f"VLLMException: {exc.error_type} - {exc.detail} (status: {exc.status_code})")
 
     error_response = ErrorResponse(
         message=exc.detail,

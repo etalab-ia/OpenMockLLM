@@ -33,7 +33,7 @@ def create_app(args):
 
     app = FastAPI(
         title="OpenMockLLM API",
-        description="Mock LLM API Server supporting vLLM and Mistral",
+        description="Mock LLM API Server supporting vllm and mistral",
         version="1.0.0",
     )
 
@@ -59,7 +59,7 @@ def create_app(args):
         app.include_router(models.router)
         app.include_router(embeddings.router)
         app.include_router(health.router)
-        logger.info("Loaded vLLM backend with all endpoints")
+        logger.info("Loaded vllm backend with all endpoints")
 
     elif args.backend == "mistral":
         from openmockllm.mistral.endpoints import chat, embeddings, models
@@ -73,7 +73,7 @@ def create_app(args):
         app.include_router(chat.router)
         app.include_router(models.router)
         app.include_router(embeddings.router)
-        logger.info("Loaded Mistral backend with exception handling")
+        logger.info("Loaded mistral backend with exception handling")
 
     return app
 
