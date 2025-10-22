@@ -5,7 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
-from openmockllm.logger import init_logger
+from openmockllm.logger import init_json_logger
 from openmockllm.security import check_api_key
 from openmockllm.vllm.exceptions import NotFoundError
 from openmockllm.vllm.schemas.chat import (
@@ -15,20 +15,28 @@ from openmockllm.vllm.schemas.chat import (
     Message,
     Usage,
 )
-from openmockllm.vllm.utils.chat import calculate_realistic_delay, count_tokens, generate_random_response, \
-    generate_stream_response, get_active_requests, increment_active_requests, decrement_active_requests
+from openmockllm.vllm.utils.chat import (
+    calculate_realistic_delay,
+    count_tokens,
+    generate_random_response,
+    generate_stream_response,
+    get_active_requests,
+    increment_active_requests,
+    decrement_active_requests,
+)
 
-logger = init_logger(__name__)
+logger = init_json_logger(__name__)
 router = APIRouter(prefix="/v1", tags=["chat"])
 
 
 @router.post("/chat/completions", dependencies=[Depends(check_api_key)])
 async def chat_completions(request: Request, body: ChatRequest):
     """Handle chat completion requests with streaming and non-streaming support"""
+    request_id = f"chatcmpl-{uuid.uuid4().hex}"
+    start_time = time.perf_counter()
     try:
         increment_active_requests()
-        logger.info(f"Active requests: {get_active_requests()}")
-        request_id = f"chatcmpl-{uuid.uuid4().hex}"
+        logger.info("beginning of request", extra={"active requests": get_active_requests()})
 
         if body.model and body.model != request.app.state.model_name:
             raise NotFoundError(f"The model `{body.model}` does not exist.")
@@ -55,3 +63,13 @@ async def chat_completions(request: Request, body: ChatRequest):
             return response
     finally:
         decrement_active_requests()
+        execution_time = time.perf_counter() - start_time
+        logger.info(
+            "end of request",
+            extra={
+                "request message": last_message,
+                "active requests": get_active_requests(),
+                "execution_time_seconds": round(execution_time, 3),
+                "request_id": request_id,
+            },
+        )

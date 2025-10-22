@@ -16,6 +16,7 @@ fake.seed_instance()
 _active_requests = 0
 _lock = threading.Lock()
 
+
 def increment_active_requests() -> int:
     global _active_requests
     with _lock:
@@ -46,6 +47,7 @@ def calculate_load_factor() -> float:
         return 1.8 + (active - 5) * 0.4
     else:
         return 3.8 + (active - 10) * 0.6
+
 
 def count_tokens(text: str) -> int:
     return len(tokenizer.encode(text))
@@ -123,7 +125,6 @@ async def generate_stream_response(response_text: str, model: str, temperature: 
             "choices": [{"index": 0, "delta": {"content": token_text}, "finish_reason": None}],
         }
         yield f"data: {json.dumps(chunk)}\n\n"
-
         await asyncio.sleep(token_delay)
 
     final_chunk = {
