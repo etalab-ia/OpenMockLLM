@@ -5,7 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
-from openmockllm.logger import init_json_logger
+from openmockllm.main import init_logger_from_env
 from openmockllm.security import check_api_key
 from openmockllm.vllm.exceptions import NotFoundError
 from openmockllm.vllm.schemas.chat import (
@@ -25,7 +25,8 @@ from openmockllm.vllm.utils.chat import (
     decrement_active_requests,
 )
 
-logger = init_json_logger(__name__)
+logger = init_logger_from_env(__name__)
+
 router = APIRouter(prefix="/v1", tags=["chat"])
 
 
@@ -67,8 +68,8 @@ async def chat_completions(request: Request, body: ChatRequest):
         logger.info(
             "end of request",
             extra={
-                "request message": last_message,
-                "active requests": get_active_requests(),
+                "requestMessage": last_message,
+                "activeRequests": get_active_requests(),
                 "execution_time_seconds": round(execution_time, 3),
                 "request_id": request_id,
             },

@@ -1,12 +1,25 @@
 import argparse
+import logging
+import os
 
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
 
-from openmockllm.logger import init_logger
+from openmockllm.logger import LoggingMiddleware, init_json_logger
 from openmockllm.settings import settings
 
-logger = init_logger("openmockllm")
+
+def init_logger_from_env(name: str) -> logging.Logger:
+    settings.log_level = os.getenv("LOG_LEVEL", "INFO")
+    fields = os.getenv("LOG_FIELDS")
+    settings.log_fields = [f.strip() for f in fields.split(",")] if fields else None
+    settings.log_include_extra = os.getenv("LOG_INCLUDE_EXTRA", "true").lower() == "true"
+    return init_json_logger(
+        name,
+        level=settings.log_level,
+        fields=settings.log_fields,
+        include_extra=settings.log_include_extra,
+    )
 
 
 def parse_args():
@@ -26,7 +39,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def create_app(args):
+def create_app(args, logger: logging.Logger):
     """Create and configure FastAPI application"""
     if args.api_key:
         settings.api_key = args.api_key
@@ -42,6 +55,7 @@ def create_app(args):
         description="Mock LLM API Server supporting vllm and mistral",
         version="1.0.0",
     )
+    app.add_middleware(LoggingMiddleware)
 
     # Store configuration in app state
     app.state.backend = args.backend
@@ -86,7 +100,7 @@ def create_app(args):
 def main():
     """Main entry point"""
     args = parse_args()
-
+    logger = init_logger_from_env("api")
     logger.info("=" * 60)
     logger.info("OpenMockLLM API Server")
     logger.info("=" * 60)
@@ -101,12 +115,18 @@ def main():
     logger.info(f"Faker seed instance:      {args.faker_seed_instance if args.faker_seed_instance else 'Disabled'}")
     logger.info("=" * 60)
 
-    app = create_app(args)
+    app = create_app(args, logger)
 
     logger.info(f"Starting server on http://0.0.0.0:{args.port}")
     logger.info(f"API documentation: http://0.0.0.0:{args.port}/docs")
 
-    uvicorn.run(app, host="0.0.0.0", port=args.port)
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=args.port,
+        log_config=None,
+        access_log=False,
+    )
 
 
 if __name__ == "__main__":
