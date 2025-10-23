@@ -89,3 +89,17 @@ curl -X POST http://localhost:8002/rerank \
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+```
+# Install with pip
+pip install -e .
+
+# Or install with dev dependencies
+pip install -e ".[dev]"
+````
+
+Run API with the following command:
+
+```bash
+python -m openmockllm.main --reload
+```

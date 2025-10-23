@@ -41,7 +41,7 @@ dev = [
 ]
 
 [project.scripts]
-openmockllm = "openmockllm.main:main"
+openmockllm = "openmockllm.main:run"
 
 [project.urls]
 Homepage = "https://github.com/etalab-ia/OpenMockLLM"

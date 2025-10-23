@@ -37,7 +37,7 @@ async def chat_completions(request: Request, body: ChatRequest):
         raise NotFoundError(f"The model `{body.model}` does not exist.")
     last_message = body.messages[-1].content if body.messages else ""
 
-    if not check_max_context_length(prompt=[msg.content for msg in body.messages], max_context_length=request.app.state.max_context_length):
+    if not check_max_context_length(prompt=" ".join([msg.content for msg in body.messages]), max_context_length=request.app.state.max_context):
         raise BadRequestError("The context length is too long.")
 
     simulated_response = generate_random_response(last_message, body.temperature, body.max_tokens)

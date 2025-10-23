@@ -61,6 +61,7 @@ def create_app(args):
     app.state.owned_by = args.owned_by
     app.state.model_name = args.model_name
     app.state.embedding_dimension = args.embedding_dimension
+    app.state.max_context = args.max_context
 
     # Include routers based on backend
     if args.backend == "vllm":
@@ -116,39 +117,41 @@ def create_app(args):
     return app
 
 
-def main():
-    """Main entry point"""
-    args = parse_args()
+# Parse args and create app at module level (executed on import)
+args = parse_args()
 
-    logger.info("=" * 60)
-    logger.info("OpenMockLLM API Server")
-    logger.info("=" * 60)
-    logger.info(f"Backend:          {args.backend}")
-    logger.info(f"Port:             {args.port}")
-    logger.info(f"Max Context:      {args.max_context}")
-    logger.info(f"Owned By:         {args.owned_by}")
-    logger.info(f"Model Name:       {args.model_name}")
-    logger.info(f"API Key:          {'Enabled' if args.api_key else 'Disabled'}")
-    logger.info(f"Tiktoken encoder: {args.tiktoken_encoder}")
-    logger.info(f"Faker langage:    {args.faker_langage}")
-    logger.info(f"Faker seed:       {args.faker_seed if args.faker_seed else 'Disabled'}")
+logger.info("=" * 60)
+logger.info("OpenMockLLM API Server")
+logger.info("=" * 60)
+logger.info(f"Backend:          {args.backend}")
+logger.info(f"Port:             {args.port}")
+logger.info(f"Max Context:      {args.max_context}")
+logger.info(f"Owned By:         {args.owned_by}")
+logger.info(f"Model Name:       {args.model_name}")
+logger.info(f"API Key:          {'Enabled' if args.api_key else 'Disabled'}")
+logger.info(f"Tiktoken encoder: {args.tiktoken_encoder}")
+logger.info(f"Faker langage:    {args.faker_langage}")
+logger.info(f"Faker seed:       {args.faker_seed if args.faker_seed else 'Disabled'}")
 
-    # TEI-specific parameters
-    if args.backend == "tei":
-        logger.info(f"Payload Limit:    {args.payload_limit}")
-        logger.info(f"Max Client Batch: {args.max_client_batch_size}")
-        logger.info(f"Auto Truncate:    {args.auto_truncate}")
-        logger.info(f"Max Batch Tokens: {args.max_batch_tokens}")
+# TEI-specific parameters
+if args.backend == "tei":
+    logger.info(f"Payload Limit:    {args.payload_limit}")
+    logger.info(f"Max Client Batch: {args.max_client_batch_size}")
+    logger.info(f"Auto Truncate:    {args.auto_truncate}")
+    logger.info(f"Max Batch Tokens: {args.max_batch_tokens}")
 
-    logger.info("=" * 60)
+logger.info("=" * 60)
 
-    app = create_app(args)
+# Create app instance (executed on import)
+app = create_app(args)
 
+
+def run():
+    """Entry point for CLI command"""
     logger.info(f"Starting server on http://{args.host}:{args.port}")
     logger.info(f"API documentation: http://{args.host}:{args.port}/docs")
-
-    uvicorn.run(app, host=args.host, port=args.port, reload=args.reload)
+    uvicorn.run("openmockllm.main:app", host=args.host, port=args.port, reload=args.reload)
 
 
 if __name__ == "__main__":
-    main()
+    run()
