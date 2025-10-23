@@ -1,5 +1,3 @@
-from typing import List
-
 from openmockllm.vllm.schemas.core import VllmBaseModel
 
 
@@ -12,4 +10,4 @@ class Model(VllmBaseModel):
 
 class ModelsResponse(VllmBaseModel):
     object: str = "list"
-    data: List[Model]
+    data: list[Model]

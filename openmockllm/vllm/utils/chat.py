@@ -1,8 +1,8 @@
 import asyncio
+from collections.abc import AsyncGenerator
 import json
 import random
 import time
-from typing import AsyncGenerator, Optional
 import uuid
 
 from faker import Faker
@@ -23,7 +23,7 @@ def check_max_context_length(prompt: str, max_context_length: int) -> int:
     return len(tokenizer.encode(prompt)) <= max_context_length
 
 
-def generate_random_response(user_message: str, temperature: Optional[float] = 0.7, max_tokens: Optional[int] = 1000) -> str:
+def generate_random_response(user_message: str, temperature: float | None = 0.7, max_tokens: int | None = 1000) -> str:
     max_tokens = max_tokens if max_tokens is not None else random.randint(100, 1000)
     temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
     prompt_token_count = count_tokens(user_message)
@@ -47,7 +47,7 @@ def generate_random_response(user_message: str, temperature: Optional[float] = 0
     return "\n\n".join(response_parts)
 
 
-def calculate_realistic_delay(completion_tokens: int, temperature: Optional[float] = 0.7) -> float:
+def calculate_realistic_delay(completion_tokens: int, temperature: float | None = 0.7) -> float:
     temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
     tokens_per_second = 35 - (temperature * 10)
 
@@ -62,7 +62,7 @@ def calculate_realistic_delay(completion_tokens: int, temperature: Optional[floa
     return max(0.1, total_delay)
 
 
-async def generate_stream_response(response_text: str, model: str, temperature: Optional[float] = 0.7) -> AsyncGenerator[str, None]:
+async def generate_stream_response(response_text: str, model: str, temperature: float | None = 0.7) -> AsyncGenerator[str, None]:
     chunk_id = f"chatcmpl-{uuid.uuid4().hex[:8]}"
     temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
     created = int(time.time())

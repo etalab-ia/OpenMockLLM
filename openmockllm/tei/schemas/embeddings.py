@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List, Optional, Union
 
 from openmockllm.tei.schemas.core import TeiBaseModel
 
@@ -12,21 +11,21 @@ class EncodingFormat(str, Enum):
 
 
 # Input types based on TEI OpenAPI schema
-InputType = Union[str, List[int]]
-Input = Union[InputType, List[InputType]]
+InputType = str | list[int]
+Input = InputType | list[InputType]
 
 # Embedding can be array of floats or base64 encoded string
-Embedding = Union[List[float], str]
+Embedding = list[float] | str
 
 
 class OpenAICompatRequest(TeiBaseModel):
     """OpenAI compatible embedding request"""
 
     input: Input
-    model: Optional[str] = None
+    model: str | None = None
     encoding_format: EncodingFormat = EncodingFormat.FLOAT
-    dimensions: Optional[int] = None
-    user: Optional[str] = None
+    dimensions: int | None = None
+    user: str | None = None
 
 
 class OpenAICompatEmbedding(TeiBaseModel):
@@ -48,7 +47,7 @@ class OpenAICompatResponse(TeiBaseModel):
     """OpenAI compatible embedding response"""
 
     object: str = "list"
-    data: List[OpenAICompatEmbedding]
+    data: list[OpenAICompatEmbedding]
     model: str
     usage: OpenAICompatUsage
 

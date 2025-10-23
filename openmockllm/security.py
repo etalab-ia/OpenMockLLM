@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -10,7 +10,7 @@ auth_scheme = HTTPBearer(scheme_name="API key", auto_error=False)
 
 
 def check_api_key(
-    api_key: Annotated[Optional[HTTPAuthorizationCredentials], Depends(auth_scheme)] = None,
+    api_key: Annotated[HTTPAuthorizationCredentials | None, Depends(auth_scheme)] = None,
 ):
     """Check API key if configured, otherwise allow access"""
     if not settings.api_key:

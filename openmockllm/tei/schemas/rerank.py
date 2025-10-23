@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from openmockllm.tei.schemas.core import TeiBaseModel, TruncationDirection
 
 
@@ -7,10 +5,10 @@ class RerankRequest(TeiBaseModel):
     """Rerank request"""
 
     query: str
-    texts: List[str]
+    texts: list[str]
     raw_scores: bool = False
     return_text: bool = False
-    truncate: Optional[bool] = False
+    truncate: bool | None = False
     truncation_direction: TruncationDirection = TruncationDirection.RIGHT
 
 
@@ -19,8 +17,8 @@ class Rank(TeiBaseModel):
 
     index: int
     score: float
-    text: Optional[str] = None
+    text: str | None = None
 
 
 # Response is a list of Rank objects
-RerankResponse = List[Rank]
+RerankResponse = list[Rank]

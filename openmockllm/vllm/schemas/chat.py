@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from openmockllm.vllm.schemas.core import VllmBaseModel
 
@@ -15,107 +15,107 @@ class ToolCall(VllmBaseModel):
 
     id: str
     type: str
-    function: Dict[str, Any]
+    function: dict[str, Any]
 
 
 class Message(VllmBaseModel):
     role: str
-    content: Optional[str] = None
-    name: Optional[str] = None
-    tool_calls: Optional[List[ToolCall]] = None
-    function_call: Optional[FunctionCall] = None  # Deprecated
-    refusal: Optional[str] = None
+    content: str | None = None
+    name: str | None = None
+    tool_calls: list[ToolCall] | None = None
+    function_call: FunctionCall | None = None  # Deprecated
+    refusal: str | None = None
 
 
 class ChatRequest(VllmBaseModel):
     # Required fields
-    messages: List[Message]
+    messages: list[Message]
 
     # Model selection
-    model: Optional[str] = None
+    model: str | None = None
 
     # Standard OpenAI parameters
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    n: Optional[int] = 1
-    stream: Optional[bool] = False
-    stop: Optional[Union[str, List[str]]] = []
-    max_tokens: Optional[int] = None  # deprecated but still supported
-    max_completion_tokens: Optional[int] = None
-    presence_penalty: Optional[float] = 0.0
-    frequency_penalty: Optional[float] = 0.0
-    logit_bias: Optional[Dict[str, float]] = None
-    user: Optional[str] = None
+    temperature: float | None = None
+    top_p: float | None = None
+    n: int | None = 1
+    stream: bool | None = False
+    stop: str | list[str] | None = []
+    max_tokens: int | None = None  # deprecated but still supported
+    max_completion_tokens: int | None = None
+    presence_penalty: float | None = 0.0
+    frequency_penalty: float | None = 0.0
+    logit_bias: dict[str, float] | None = None
+    user: str | None = None
 
     # Logprobs parameters
-    logprobs: Optional[bool] = False
-    top_logprobs: Optional[int] = 0
+    logprobs: bool | None = False
+    top_logprobs: int | None = 0
 
     # Response format and tools
-    response_format: Optional[Dict[str, Any]] = None
-    tools: Optional[List[Dict[str, Any]]] = None
-    tool_choice: Optional[Union[str, Dict[str, Any]]] = "none"
-    parallel_tool_calls: Optional[bool] = False
+    response_format: dict[str, Any] | None = None
+    tools: list[dict[str, Any]] | None = None
+    tool_choice: str | dict[str, Any] | None = "none"
+    parallel_tool_calls: bool | None = False
 
     # Reproducibility
-    seed: Optional[int] = None
+    seed: int | None = None
 
     # Streaming options
-    stream_options: Optional[Dict[str, Any]] = None
+    stream_options: dict[str, Any] | None = None
 
     # vLLM specific parameters
-    best_of: Optional[int] = None
-    use_beam_search: Optional[bool] = False
-    top_k: Optional[int] = None
-    min_p: Optional[float] = None
-    repetition_penalty: Optional[float] = None
-    length_penalty: Optional[float] = 1.0
-    stop_token_ids: Optional[List[int]] = []
-    include_stop_str_in_output: Optional[bool] = False
-    ignore_eos: Optional[bool] = False
-    min_tokens: Optional[int] = 0
-    skip_special_tokens: Optional[bool] = True
-    spaces_between_special_tokens: Optional[bool] = True
-    truncate_prompt_tokens: Optional[int] = None
-    prompt_logprobs: Optional[int] = None
+    best_of: int | None = None
+    use_beam_search: bool | None = False
+    top_k: int | None = None
+    min_p: float | None = None
+    repetition_penalty: float | None = None
+    length_penalty: float | None = 1.0
+    stop_token_ids: list[int] | None = []
+    include_stop_str_in_output: bool | None = False
+    ignore_eos: bool | None = False
+    min_tokens: int | None = 0
+    skip_special_tokens: bool | None = True
+    spaces_between_special_tokens: bool | None = True
+    truncate_prompt_tokens: int | None = None
+    prompt_logprobs: int | None = None
 
     # Token control
-    allowed_token_ids: Optional[List[int]] = None
-    bad_words: Optional[List[str]] = None
+    allowed_token_ids: list[int] | None = None
+    bad_words: list[str] | None = None
 
     # Message processing
-    echo: Optional[bool] = False
-    add_generation_prompt: Optional[bool] = True
-    continue_final_message: Optional[bool] = False
-    add_special_tokens: Optional[bool] = False
+    echo: bool | None = False
+    add_generation_prompt: bool | None = True
+    continue_final_message: bool | None = False
+    add_special_tokens: bool | None = False
 
     # RAG and context
-    documents: Optional[List[Dict[str, Any]]] = None
+    documents: list[dict[str, Any]] | None = None
 
     # Template control
-    chat_template: Optional[str] = None
-    chat_template_kwargs: Optional[Dict[str, Any]] = None
+    chat_template: str | None = None
+    chat_template_kwargs: dict[str, Any] | None = None
 
     # Multimodal
-    mm_processor_kwargs: Optional[Dict[str, Any]] = None
+    mm_processor_kwargs: dict[str, Any] | None = None
 
     # Guided decoding
-    guided_json: Optional[Union[str, Dict[str, Any]]] = None
-    guided_regex: Optional[str] = None
-    guided_choice: Optional[List[str]] = None
-    guided_grammar: Optional[str] = None
-    structural_tag: Optional[str] = None
-    guided_decoding_backend: Optional[str] = None
-    guided_whitespace_pattern: Optional[str] = None
+    guided_json: str | dict[str, Any] | None = None
+    guided_regex: str | None = None
+    guided_choice: list[str] | None = None
+    guided_grammar: str | None = None
+    structural_tag: str | None = None
+    guided_decoding_backend: str | None = None
+    guided_whitespace_pattern: str | None = None
 
     # Advanced options
-    priority: Optional[int] = 0
-    request_id: Optional[str] = None
-    logits_processors: Optional[List[Any]] = None
-    return_tokens_as_token_ids: Optional[bool] = None
-    cache_salt: Optional[str] = None
-    kv_transfer_params: Optional[Dict[str, Any]] = None
-    vllm_xargs: Optional[Dict[str, Any]] = None
+    priority: int | None = 0
+    request_id: str | None = None
+    logits_processors: list[Any] | None = None
+    return_tokens_as_token_ids: bool | None = None
+    cache_salt: str | None = None
+    kv_transfer_params: dict[str, Any] | None = None
+    vllm_xargs: dict[str, Any] | None = None
 
 
 class LogprobContent(VllmBaseModel):
@@ -123,46 +123,46 @@ class LogprobContent(VllmBaseModel):
 
     token: str
     logprob: float
-    bytes: Optional[List[int]] = None
-    top_logprobs: Optional[List[Dict[str, Any]]] = None
+    bytes: list[int] | None = None
+    top_logprobs: list[dict[str, Any]] | None = None
 
 
 class ChoiceLogprobs(VllmBaseModel):
     """Log probability information for the choice"""
 
-    content: Optional[List[LogprobContent]] = None
-    refusal: Optional[List[LogprobContent]] = None
+    content: list[LogprobContent] | None = None
+    refusal: list[LogprobContent] | None = None
 
 
 class ChatResponseChoice(VllmBaseModel):
     index: int
     message: Message
-    finish_reason: Optional[str] = None
-    logprobs: Optional[ChoiceLogprobs] = None
-    stop_reason: Optional[Union[int, str]] = None  # vLLM specific
+    finish_reason: str | None = None
+    logprobs: ChoiceLogprobs | None = None
+    stop_reason: int | str | None = None  # vLLM specific
 
 
 class CompletionTokensDetails(VllmBaseModel):
     """Breakdown of completion tokens"""
 
-    reasoning_tokens: Optional[int] = None
-    accepted_prediction_tokens: Optional[int] = None
-    rejected_prediction_tokens: Optional[int] = None
+    reasoning_tokens: int | None = None
+    accepted_prediction_tokens: int | None = None
+    rejected_prediction_tokens: int | None = None
 
 
 class PromptTokensDetails(VllmBaseModel):
     """Breakdown of prompt tokens"""
 
-    cached_tokens: Optional[int] = None
-    audio_tokens: Optional[int] = None
+    cached_tokens: int | None = None
+    audio_tokens: int | None = None
 
 
 class Usage(VllmBaseModel):
     prompt_tokens: int
     completion_tokens: int
     total_tokens: int
-    prompt_tokens_details: Optional[PromptTokensDetails] = None
-    completion_tokens_details: Optional[CompletionTokensDetails] = None
+    prompt_tokens_details: PromptTokensDetails | None = None
+    completion_tokens_details: CompletionTokensDetails | None = None
 
 
 class ChatResponse(VllmBaseModel):
@@ -170,28 +170,28 @@ class ChatResponse(VllmBaseModel):
     object: str = "chat.completion"
     created: int
     model: str
-    choices: List[ChatResponseChoice]
-    usage: Optional[Usage] = None
-    system_fingerprint: Optional[str] = None
-    service_tier: Optional[str] = None
+    choices: list[ChatResponseChoice]
+    usage: Usage | None = None
+    system_fingerprint: str | None = None
+    service_tier: str | None = None
 
 
 class StreamDelta(VllmBaseModel):
     """Delta object in streaming response"""
 
-    role: Optional[str] = None
-    content: Optional[str] = None
-    tool_calls: Optional[List[Dict[str, Any]]] = None
-    function_call: Optional[Dict[str, Any]] = None
-    refusal: Optional[str] = None
+    role: str | None = None
+    content: str | None = None
+    tool_calls: list[dict[str, Any]] | None = None
+    function_call: dict[str, Any] | None = None
+    refusal: str | None = None
 
 
 class ChatStreamResponseChoice(VllmBaseModel):
     index: int
     delta: StreamDelta
-    finish_reason: Optional[str] = None
-    logprobs: Optional[ChoiceLogprobs] = None
-    stop_reason: Optional[Union[int, str]] = None  # vLLM specific
+    finish_reason: str | None = None
+    logprobs: ChoiceLogprobs | None = None
+    stop_reason: int | str | None = None  # vLLM specific
 
 
 class ChatStreamResponse(VllmBaseModel):
@@ -199,7 +199,7 @@ class ChatStreamResponse(VllmBaseModel):
     object: str = "chat.completion.chunk"
     created: int
     model: str
-    choices: List[ChatStreamResponseChoice]
-    usage: Optional[Usage] = None  # Present in final chunk when stream_options.include_usage=true
-    system_fingerprint: Optional[str] = None
-    service_tier: Optional[str] = None
+    choices: list[ChatStreamResponseChoice]
+    usage: Usage | None = None  # Present in final chunk when stream_options.include_usage=true
+    system_fingerprint: str | None = None
+    service_tier: str | None = None

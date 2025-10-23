@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import List
 
 
 class Model(BaseModel):
@@ -11,4 +10,4 @@ class Model(BaseModel):
 
 class ModelsResponse(BaseModel):
     object: str = "list"
-    data: List[Model]
+    data: list[Model]

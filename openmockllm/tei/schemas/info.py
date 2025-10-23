@@ -1,5 +1,3 @@
-from typing import Dict, Optional, Union
-
 from openmockllm.tei.schemas.core import TeiBaseModel
 
 
@@ -12,8 +10,8 @@ class EmbeddingModel(TeiBaseModel):
 class ClassifierModel(TeiBaseModel):
     """Classifier/Reranker model information"""
 
-    id2label: Dict[str, str]
-    label2id: Dict[str, int]
+    id2label: dict[str, str]
+    label2id: dict[str, int]
 
 
 class ModelTypeEmbedding(TeiBaseModel):
@@ -35,7 +33,7 @@ class ModelTypeReranker(TeiBaseModel):
 
 
 # ModelType is a union of different model types
-ModelType = Union[ModelTypeEmbedding, ModelTypeClassifier, ModelTypeReranker]
+ModelType = ModelTypeEmbedding | ModelTypeClassifier | ModelTypeReranker
 
 
 class Info(TeiBaseModel):
@@ -43,7 +41,7 @@ class Info(TeiBaseModel):
 
     # Model info
     model_id: str
-    model_sha: Optional[str] = None
+    model_sha: str | None = None
     model_dtype: str
     model_type: ModelType
 
@@ -52,11 +50,11 @@ class Info(TeiBaseModel):
     max_input_length: int
     max_batch_tokens: int
     max_client_batch_size: int
-    max_batch_requests: Optional[int] = None
+    max_batch_requests: int | None = None
     auto_truncate: bool
     tokenization_workers: int
 
     # Router info
     version: str
-    sha: Optional[str] = None
-    docker_label: Optional[str] = None
+    sha: str | None = None
+    docker_label: str | None = None

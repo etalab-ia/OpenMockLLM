@@ -1,32 +1,30 @@
-from typing import List, Optional, Union
-
 from openmockllm.vllm.schemas.core import VllmBaseModel
 
 
 class EmbeddingRequest(VllmBaseModel):
     # Required fields
-    input: Union[str, List[str]]
+    input: str | list[str]
 
     # Model selection
-    model: Optional[str] = None
+    model: str | None = None
 
     # Encoding options
-    encoding_format: Optional[str] = "float"
-    dimensions: Optional[int] = None
+    encoding_format: str | None = "float"
+    dimensions: int | None = None
 
     # User and priority
-    user: Optional[str] = None
-    priority: Optional[int] = 0
+    user: str | None = None
+    priority: int | None = 0
 
     # Token handling
-    truncate_prompt_tokens: Optional[int] = None
-    add_special_tokens: Optional[bool] = True
+    truncate_prompt_tokens: int | None = None
+    add_special_tokens: bool | None = True
 
 
 class EmbeddingData(VllmBaseModel):
     object: str = "embedding"
     index: int
-    embedding: List[float]
+    embedding: list[float]
 
 
 class EmbeddingUsage(VllmBaseModel):
@@ -35,8 +33,8 @@ class EmbeddingUsage(VllmBaseModel):
 
 
 class EmbeddingResponse(VllmBaseModel):
-    id: Optional[str] = None  # vLLM specific
+    id: str | None = None  # vLLM specific
     object: str = "list"
-    data: List[EmbeddingData]
+    data: list[EmbeddingData]
     model: str
     usage: EmbeddingUsage
