@@ -20,6 +20,7 @@ def parse_args():
 
     # Common arguments
     parser.add_argument("--backend", type=str, choices=["vllm", "mistral", "tei"], default="vllm", help="Backend to use (vllm, mistral, or tei)")
+    parser.add_argument("--simulate-latency", type=bool, default=False, help="Simulate latency (default: False)")
     parser.add_argument("--max-context", type=int, default=128000, help="Maximum context length (default: 128000)")
     parser.add_argument("--owned-by", type=str, default="OpenMockLLM", help="Owner of the API (default: OpenMockLLM)")
     parser.add_argument("--model-name", type=str, default="openmockllm", help="Model name to return (default: openmockllm)")
@@ -49,14 +50,11 @@ def create_app(args):
     if args.faker_seed:
         settings.faker_seed = args.faker_seed
 
-    app = FastAPI(
-        title="OpenMockLLM API",
-        description="Mock LLM API Server supporting vllm and mistral",
-        version="1.0.0",
-    )
+    app = FastAPI(title="OpenMockLLM API", description="Mock LLM API Server supporting vllm and mistral", version="1.0.0")
 
     # Store configuration in app state
     app.state.backend = args.backend
+    app.state.simulate_latency = args.simulate_latency
     app.state.max_context = args.max_context
     app.state.owned_by = args.owned_by
     app.state.model_name = args.model_name

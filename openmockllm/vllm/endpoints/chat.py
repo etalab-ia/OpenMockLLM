@@ -48,8 +48,9 @@ async def chat_completions(request: Request, body: ChatRequest):
         prompt_tokens = sum(count_tokens(msg.content) for msg in body.messages)
         completion_tokens = count_tokens(simulated_response)
 
-        delay = calculate_realistic_delay(completion_tokens, body.temperature)
-        await asyncio.sleep(delay)
+        if request.app.state.simulate_latency:
+            delay = calculate_realistic_delay(completion_tokens, body.temperature)
+            await asyncio.sleep(delay)
 
         response = ChatResponse(
             id=request_id,
