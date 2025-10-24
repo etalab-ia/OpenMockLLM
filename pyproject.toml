@@ -7,7 +7,7 @@ name = "openmockllm"
 version = "0.1.0"
 description = "OpenMockLLM - FastAPI Mock LLM API Server supporting vLLM, Mistral, and TEI backends"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
     { name = "Votre Nom", email = "votre.email@example.com" }
@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Software Development :: Testing :: Mocking",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.10",
     "Framework :: FastAPI",
 ]
 
