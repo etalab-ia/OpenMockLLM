@@ -25,6 +25,23 @@ def get_chat_content():
     return lorem.paragraphs(3)
 
 
+def create_chat_response(request_id: str, model: str) -> ChatResponse:
+    return ChatResponse(
+        id=request_id,
+        object="chat.completion",
+        created=int(time.time()),
+        model=model,
+        choices=[
+            ChatResponseChoice(
+                index=0,
+                message=Message(role="assistant", content=get_chat_content()),
+                finish_reason="stop",
+            )
+        ],
+        usage=Usage(prompt_tokens=0, completion_tokens=0, total_tokens=0),
+    )
+
+
 async def generate_stream(request_id: str, model: str, content: str):
     """Generate streaming response chunks"""
     # First chunk with role
@@ -77,39 +94,11 @@ async def chat_completions(request: Request, body: dict):
     )
 
     if is_audio_request:
-        response = ChatResponse(
-            id=request_id,
-            object="chat.completion",
-            created=int(time.time()),
-            model=model,
-            choices=[
-                ChatResponseChoice(
-                    index=0,
-                    message=Message(role="assistant", content=get_chat_content()),
-                    finish_reason="stop",
-                )
-            ],
-            usage=Usage(prompt_tokens=0, completion_tokens=0, total_tokens=0),
-        )
-        return response
+        return create_chat_response(request_id, model)
     elif body["stream"]:
         return StreamingResponse(
             generate_stream(request_id, model, get_chat_content()),
             media_type="text/event-stream",
         )
     else:
-        response = ChatResponse(
-            id=request_id,
-            object="chat.completion",
-            created=int(time.time()),
-            model=model,
-            choices=[
-                ChatResponseChoice(
-                    index=0,
-                    message=Message(role="assistant", content=get_chat_content()),
-                    finish_reason="stop",
-                )
-            ],
-            usage=Usage(prompt_tokens=0, completion_tokens=0, total_tokens=0),
-        )
-        return response
+        return create_chat_response(request_id, model)
