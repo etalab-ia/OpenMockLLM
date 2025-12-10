@@ -94,11 +94,11 @@ async def chat_completions(request: Request, body: dict):
     )
 
     if is_audio_request:
-        return create_chat_response(request_id, model)
+        return create_chat_response(request_id=request_id, model=model)
     elif body["stream"]:
         return StreamingResponse(
-            generate_stream(request_id, model, get_chat_content()),
+            generate_stream(request_id=request_id, model=model, content=get_chat_content()),
             media_type="text/event-stream",
         )
     else:
-        return create_chat_response(request_id, model)
+        return create_chat_response(request_id=request_id, model=model)
