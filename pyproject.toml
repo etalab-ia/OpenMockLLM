@@ -50,10 +50,17 @@ Documentation = "https://github.com/etalab-ia/OpenMockLLM#readme"
 Repository = "https://github.com/etalab-ia/OpenMockLLM"
 Issues = "https://github.com/etalab-ia/OpenMockLLM/issues"
 
+
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["openmockllm*"]
 exclude = ["tests*", "docs*"]
+
+[tool.setuptools.package-data]
+openmockllm = ["assets/**/*"]
 
 [tool.ruff]
 line-length = 150
