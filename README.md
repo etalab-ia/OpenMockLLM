@@ -90,16 +90,31 @@ curl -X POST http://localhost:8002/rerank \
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-```
-# Install with pip
-pip install -e .
+### Development
 
-# Or install with dev dependencies
-pip install -e ".[dev]"
-````
-
-Run API with the following command:
-
+1. Install the dependencies:
 ```bash
-python -m openmockllm.main --reload
+pip install -e ".[dev]"
+```
+
+2. Run a server:
+```bash
+python -m openmockllm.main --reload --backend mistral
+```
+
+### Testing
+
+1. Install the dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+2. Run a server:
+```bash
+python -m openmockllm.main --reload --backend mistral
+```
+
+3. Run the tests:
+```bash
+pytest tests/test_mistral
 ```

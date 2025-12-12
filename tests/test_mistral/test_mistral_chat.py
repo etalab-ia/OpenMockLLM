@@ -1,8 +1,7 @@
 import pytest
 
 
-@pytest.mark.asyncio
-async def test_chat_completion_basic(mistral_client):
+def test_chat_completion_basic(mistral_client):
     """Test basic chat completion request"""
     response = mistral_client.chat.complete(
         model="openmockllm",
@@ -23,8 +22,7 @@ async def test_chat_completion_basic(mistral_client):
     assert response.usage.total_tokens > 0
 
 
-@pytest.mark.asyncio
-async def test_chat_completion_with_max_tokens(mistral_client):
+def test_chat_completion_with_max_tokens(mistral_client):
     """Test chat completion with max_tokens parameter"""
     response = mistral_client.chat.complete(
         model="openmockllm",
@@ -37,8 +35,7 @@ async def test_chat_completion_with_max_tokens(mistral_client):
     assert response.usage.completion_tokens <= 50
 
 
-@pytest.mark.asyncio
-async def test_chat_completion_multiple_messages(mistral_client):
+def test_chat_completion_multiple_messages(mistral_client):
     """Test chat completion with multiple messages in conversation"""
     messages = [
         {"role": "user", "content": "What is 2+2?"},
@@ -56,14 +53,19 @@ async def test_chat_completion_multiple_messages(mistral_client):
     assert len(response.choices[0].message.content) > 0
 
 
-@pytest.mark.asyncio
-async def test_chat_completion_streaming(mistral_client):
+def test_chat_completion_streaming_sync_basic(mistral_client):
     """Test streaming chat completion"""
-    stream = mistral_client.chat.complete(
-        model="openmockllm",
-        messages=[{"role": "user", "content": "Count to 5"}],
-        stream=True,
-    )
+
+    stream_response = mistral_client.chat.stream(model="openmockllm", messages=[{"role": "user", "content": "Hello, how are you?"}])
+
+    for chunk in stream_response:
+        assert chunk.data.choices[0].delta.content is not None
+
+
+@pytest.mark.asyncio
+async def test_chat_completion_async_streaming(mistral_client):
+    """Test streaming chat completion"""
+    stream = await mistral_client.chat.stream_async(model="openmockllm", messages=[{"role": "user", "content": "Hello, how are you?"}])
 
     chunks = []
     async for chunk in stream:
@@ -72,9 +74,8 @@ async def test_chat_completion_streaming(mistral_client):
             break
 
     assert len(chunks) > 0
-    # First chunk should have role
     if chunks[0].data.choices[0].delta.role:
         assert chunks[0].data.choices[0].delta.role == "assistant"
-    # Verify we received content chunks
+
     content_chunks = [c for c in chunks if c.data.choices[0].delta.content]
     assert len(content_chunks) > 0

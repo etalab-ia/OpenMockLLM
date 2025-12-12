@@ -1,5 +1,10 @@
 from fastapi import Request
-from mistralai.models import ChatCompletionRequest, CompletionChunk, CompletionEvent, CompletionResponseStreamChoice, DeltaMessage
+from mistralai.models import (
+    ChatCompletionRequest,
+    CompletionChunk,
+    CompletionResponseStreamChoice,
+    DeltaMessage,
+)
 from mistralai.types.basemodel import Unset
 
 from openmockllm.utils import generate_stream_chat_content
@@ -16,21 +21,16 @@ async def generate_stream(request: Request, body: ChatCompletionRequest):
         # The generator sends "[DONE]\n\n" as the final chunk
         if "[DONE]" in chunk_text:
             # Send final chunk with finish_reason
-            chunk = CompletionEvent(
-                data=CompletionChunk(
-                    id="baf234d63e524e74b25c2d764b043bc2",
-                    model=request.app.state.model_name,
-                    choices=[
-                        CompletionResponseStreamChoice(
-                            index=0,
-                            delta=DeltaMessage(
-                                role=None,
-                                content="",
-                            ),
-                            finish_reason="stop",
-                        )
-                    ],
-                )
+            chunk = CompletionChunk(
+                id="baf234d63e524e74b25c2d764b043bc2",
+                model=request.app.state.model_name,
+                choices=[
+                    CompletionResponseStreamChoice(
+                        index=0,
+                        delta=DeltaMessage(role=None, content=""),
+                        finish_reason="stop",
+                    )
+                ],
             )
             # Format as SSE: data: <json>\n\n
             yield f"data: {chunk.model_dump_json()}\n\n"
@@ -38,21 +38,16 @@ async def generate_stream(request: Request, body: ChatCompletionRequest):
 
         # Regular content chunk
         role = "assistant" if i == 0 else None
-        chunk = CompletionEvent(
-            data=CompletionChunk(
-                id="baf234d63e524e74b25c2d764b043bc2",
-                model=request.app.state.model_name,
-                choices=[
-                    CompletionResponseStreamChoice(
-                        index=0,
-                        delta=DeltaMessage(
-                            role=role,
-                            content=chunk_text,
-                        ),
-                        finish_reason=None,
-                    )
-                ],
-            )
+        chunk = CompletionChunk(
+            id="baf234d63e524e74b25c2d764b043bc2",
+            model=request.app.state.model_name,
+            choices=[
+                CompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(role=role, content=chunk_text),
+                    finish_reason=None,
+                )
+            ],
         )
         # Format as SSE: data: <json>\n\n
         yield f"data: {chunk.model_dump_json()}\n\n"

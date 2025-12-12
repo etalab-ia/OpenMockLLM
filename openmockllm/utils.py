@@ -34,6 +34,16 @@ def check_max_context_length(prompt: str, max_context_length: int) -> int:
     return len(tokenizer.encode(prompt)) <= max_context_length
 
 
+def _clamp_to_max_tokens(text: str, max_tokens: int) -> str:
+    """
+    Trim text so that it is at most `max_tokens` tokens according to the configured tokenizer.
+    """
+    tokens = tokenizer.encode(text)
+    if len(tokens) <= max_tokens:
+        return text
+    return tokenizer.decode(tokens[:max_tokens])
+
+
 def generate_text(input_tokens: int, max_tokens: int | None = None) -> str:
     """
     Generate text based on the input tokens and the max tokens.
@@ -65,7 +75,13 @@ def generate_text(input_tokens: int, max_tokens: int | None = None) -> str:
         response_parts.append(text)
         current_length += len(text)
 
-    return "\n\n".join(response_parts)
+    text = "\n\n".join(response_parts)
+
+    # Enforce hard cap when max_tokens is provided to satisfy tests and callers.
+    if max_tokens is not None:
+        text = _clamp_to_max_tokens(text, max_tokens)
+
+    return text
 
 
 def get_realistic_ttft(input_tokens: int, inflight_requests: int = 1) -> float:

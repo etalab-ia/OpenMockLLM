@@ -1,8 +1,4 @@
-import pytest
-
-
-@pytest.mark.asyncio
-async def test_list_models(mistral_client):
+def test_list_models(mistral_client):
     """Test listing available models"""
     response = mistral_client.models.list()
 

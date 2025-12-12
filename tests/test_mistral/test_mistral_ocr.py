@@ -1,8 +1,4 @@
-import pytest
-
-
-@pytest.mark.asyncio
-async def test_ocr_basic(mistral_client):
+def test_ocr_basic(mistral_client):
     """Test basic OCR request with prompt"""
     response = mistral_client.ocr.process(
         model="openmockllm", document={"type": "document_url", "document_url": "https://arxiv.org/pdf/2201.04234"}, include_image_base64=True
