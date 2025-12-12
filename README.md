@@ -3,11 +3,11 @@
 A FastAPI-based mock LLM API server that simulates multiple Large Language Model API providers.
 
 Supported backends:
-| Backend | Description | Endpoints |
-| --- | --- | --- |
-| vLLM | OpenAI-compatible |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings<br>• /health |
-| Mistral | Mistral AI |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings |
-| TEI | Text Embeddings Inference |• /v1/embeddings<br>• /health<br>• /info<br>• /rerank |
+| Backend | Endpoints |
+| --- | --- |
+| [vLLM](https://github.com/vllm-project/vllm) |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings<br>• /health |
+| [Mistral](https://mistral.ai/) |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings |
+| [Text Embeddings Inference](https://github.com/huggingface/text-embeddings-inference) |• /v1/embeddings<br>• /health<br>• /info<br>• /rerank |
 
 ## Quickstart
 
@@ -25,8 +25,6 @@ Supported backends:
 
 ### Command-line arguments
 
-### Command-Line Arguments
-
 #### Common Arguments
 
 | Argument | Type | Default | Description |
@@ -41,6 +39,8 @@ Supported backends:
 | `--tiktoken-encoder` | str | `cl100k_base` | Tiktoken encoder |
 | `--faker-langage` | str | `fr_FR` | Langage used for generating prompt responses |
 | `--faker-seed` | str | `None` | Seed for Faker generation |
+| `--simulate-latency` | flag | `False` | Simulate latency |
+| `--reference-tps` | int | `100` | Reference tokens per second for latency simulation |
 
 #### TEI-Specific Arguments
 
@@ -90,16 +90,31 @@ curl -X POST http://localhost:8002/rerank \
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-```
-# Install with pip
-pip install -e .
+### Development
 
-# Or install with dev dependencies
-pip install -e ".[dev]"
-````
-
-Run API with the following command:
-
+1. Install the dependencies:
 ```bash
-python -m openmockllm.main --reload
+pip install -e ".[dev]"
+```
+
+2. Run a server:
+```bash
+python -m openmockllm.main --reload --backend mistral
+```
+
+### Testing
+
+1. Install the dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+2. Run a server:
+```bash
+python -m openmockllm.main --reload --backend mistral
+```
+
+3. Run the tests:
+```bash
+pytest tests/test_mistral
 ```

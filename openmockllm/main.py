@@ -21,6 +21,7 @@ def parse_args():
     # Common arguments
     parser.add_argument("--backend", type=str, choices=["vllm", "mistral", "tei"], default="vllm", help="Backend to use (vllm, mistral, or tei)")
     parser.add_argument("--simulate-latency", type=bool, default=False, help="Simulate latency (default: False)")
+    parser.add_argument("--reference-tps", type=int, default=100, help="Reference tokens per second (default: 100)")
     parser.add_argument("--max-context", type=int, default=128000, help="Maximum context length (default: 128000)")
     parser.add_argument("--owned-by", type=str, default="OpenMockLLM", help="Owner of the API (default: OpenMockLLM)")
     parser.add_argument("--model-name", type=str, default="openmockllm", help="Model name to return (default: openmockllm)")
@@ -49,17 +50,21 @@ def create_app(args):
         settings.faker_langage = args.faker_langage
     if args.faker_seed:
         settings.faker_seed = args.faker_seed
+    if args.simulate_latency:
+        settings.simulate_latency = True
+    if args.reference_tps:
+        settings.reference_tps = args.reference_tps
 
     app = FastAPI(title="OpenMockLLM API", description="Mock LLM API Server supporting vllm and mistral", version="1.0.0")
 
     # Store configuration in app state
     app.state.backend = args.backend
     app.state.simulate_latency = args.simulate_latency
+    app.state.reference_tps = args.reference_tps
     app.state.max_context = args.max_context
     app.state.owned_by = args.owned_by
     app.state.model_name = args.model_name
     app.state.embedding_dimension = args.embedding_dimension
-    app.state.max_context = args.max_context
 
     # Include routers based on backend
     if args.backend == "vllm":
@@ -78,7 +83,7 @@ def create_app(args):
         logger.info("Loaded vllm backend with all endpoints")
 
     elif args.backend == "mistral":
-        from openmockllm.mistral.endpoints import chat, embeddings, models
+        from openmockllm.mistral.endpoints import chat, models, ocr
         from openmockllm.mistral.exceptions import MistralException, general_exception_handler, mistral_exception_handler
 
         # Add exception handlers
@@ -88,7 +93,7 @@ def create_app(args):
         # Add routers (prefixes are defined in the router instances)
         app.include_router(chat.router)
         app.include_router(models.router)
-        app.include_router(embeddings.router)
+        app.include_router(ocr.router)
         logger.info("Loaded mistral backend with exception handling")
 
     elif args.backend == "tei":
