@@ -83,7 +83,6 @@ select = [
     "UP",  # pyupgrade
 ]
 ignore = [
-    "E501",  # line too long
     "F403",  # import * 
     "F841",  # never used variables
 ]
