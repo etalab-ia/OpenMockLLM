@@ -10,10 +10,32 @@ from mistralai.types.basemodel import Unset
 from openmockllm.utils import generate_stream_chat_content
 
 
+def extract_prompt(content: str | list | None) -> str:
+    """
+    Normalize Mistral message content to a plain text prompt.
+
+    The SDK allows either:
+    - a single string
+    - a list of "content chunks" (e.g. text, input_audio, image_url, ...)
+    """
+    prompt = ""
+
+    if isinstance(content, str):
+        prompt = content
+
+    if isinstance(content, list):
+        prompt = ""
+        for chunk in content:
+            if "text" == chunk.type:
+                prompt += chunk.text
+
+    return prompt
+
+
 async def generate_stream(request: Request, body: ChatCompletionRequest):
     """Generate streaming response chunks in SSE format"""
 
-    prompt = "\n\n".join([msg.content for msg in body.messages])
+    prompt = "\n\n".join([extract_prompt(content=msg.content) for msg in body.messages])
     i = 0
     max_tokens = None if isinstance(body.max_tokens, Unset) else body.max_tokens
     async for chunk_text in generate_stream_chat_content(prompt=prompt, max_tokens=max_tokens):

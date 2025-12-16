@@ -1,11 +1,12 @@
+from collections.abc import Generator
 import time
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
-from mistralai.models import AssistantMessage, ChatCompletionChoice, ChatCompletionRequest, ChatCompletionResponse, CompletionEvent, UsageInfo
+from mistralai.models import AssistantMessage, ChatCompletionChoice, ChatCompletionRequest, ChatCompletionResponse, UsageInfo
 from mistralai.types.basemodel import Unset
 
-from openmockllm.mistral.utils.chat import generate_stream
+from openmockllm.mistral.utils.chat import extract_prompt, generate_stream
 from openmockllm.security import check_api_key
 from openmockllm.utils import count_tokens, generate_unstreamed_chat_content
 
@@ -13,9 +14,9 @@ router = APIRouter(prefix="/v1", tags=["chat"])
 
 
 @router.post(path="/chat/completions", dependencies=[Depends(dependency=check_api_key)])
-async def chat_completions(request: Request, body: ChatCompletionRequest) -> ChatCompletionResponse | CompletionEvent:
+async def chat_completions(request: Request, body: ChatCompletionRequest) -> ChatCompletionResponse | Generator:
     if not body.stream:
-        prompt = "\n\n".join([msg.content for msg in body.messages])
+        prompt = "\n\n".join([extract_prompt(content=msg.content) for msg in body.messages])
         max_tokens = None if isinstance(body.max_tokens, Unset) else body.max_tokens
         content = await generate_unstreamed_chat_content(prompt=prompt, max_tokens=max_tokens)
         input_tokens = count_tokens(prompt)
