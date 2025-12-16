@@ -1,4 +1,3 @@
-from collections.abc import Generator
 import time
 
 from fastapi import APIRouter, Depends, Request
@@ -14,7 +13,7 @@ router = APIRouter(prefix="/v1", tags=["chat"])
 
 
 @router.post(path="/chat/completions", dependencies=[Depends(dependency=check_api_key)])
-async def chat_completions(request: Request, body: ChatCompletionRequest) -> ChatCompletionResponse | Generator:
+async def chat_completions(request: Request, body: ChatCompletionRequest) -> ChatCompletionResponse:
     if not body.stream:
         prompt = "\n\n".join([extract_prompt(content=msg.content) for msg in body.messages])
         max_tokens = None if isinstance(body.max_tokens, Unset) else body.max_tokens
