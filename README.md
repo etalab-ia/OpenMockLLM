@@ -102,6 +102,16 @@ pip install -e ".[dev]"
 python -m openmockllm.main --reload --backend mistral
 ```
 
+### Generate Pydantic schemas
+
+* From openapi.json file:  
+```
+BACKEND=tei
+datamodel-codegen --input docs/${BACKEND}  --input-file-type openapi --output openmockllm/${BACKEND}/schemas.py --output-model-type pydantic_v2.BaseModel
+```
+
+Another recommand method is to use official SDK of the backend. 
+
 ### Testing
 
 1. Install the dependencies:

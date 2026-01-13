@@ -31,6 +31,7 @@ dependencies = [
     "mistralai>=1.9.11",
     "faker",
     "tiktoken",
+
 ]
 
 [project.optional-dependencies]
@@ -38,7 +39,8 @@ dev = [
     "ruff>=0.6.0",
     "pre-commit>=4.0.0",
     "pytest>=7.0.0",
-    "httpx>=0.24.0",  # Pour tester l'API FastAPI
+    "httpx>=0.24.0",
+    "datamodel-code-generator>=0.24.0",
 ]
 
 [project.scripts]
@@ -71,6 +73,7 @@ exclude = [
     "__pycache__",
     "build",
     "dist",
+    "**schemas.py"
 ]
 
 [tool.ruff.lint]
@@ -85,6 +88,7 @@ select = [
 ignore = [
     "F403",  # import * 
     "F841",  # never used variables
+
 ]
 
 [tool.ruff.lint.isort]
