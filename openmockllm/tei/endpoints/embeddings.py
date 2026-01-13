@@ -40,10 +40,6 @@ async def openai_embed(request: Request, body: OpenAICompatRequest):
         raise ValidationError(f"Batch size {len(inputs)} exceeds maximum {max_batch_size}", status_code=413)
 
     # Use dimensions from request or fall back to default
-
-    print(body.dimensions)
-    print(type(body.dimensions))
-
     dimensions = get_dimensions(request=request, body=body)
 
     # Get encoding format

@@ -8,7 +8,7 @@ from openmockllm.tei.schemas import OpenAICompatRequest
 
 
 def get_dimensions(request: Request, body: OpenAICompatRequest):
-    if body.dimensions == "null":
+    if body.dimensions is None:
         return request.app.state.embedding_dimension
     else:
         return body.dimensions

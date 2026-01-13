@@ -980,8 +980,8 @@
           },
           "skip_special_tokens": {
             "type": "boolean",
-            "default": "true",
-            "example": "true"
+            "default": true,
+            "example": true
           }
         }
       },
@@ -1006,14 +1006,14 @@
           "prompt_name": {
             "type": "string",
             "description": "The name of the prompt that should be used by for encoding. If not set, no prompt\nwill be applied.\n\nMust be a key in the `sentence-transformers` configuration `prompts` dictionary.\n\nFor example if ``prompt_name`` is \"query\" and the ``prompts`` is {\"query\": \"query: \", ...},\nthen the sentence \"What is the capital of France?\" will be encoded as\n\"query: What is the capital of France?\" because the prompt text will be prepended before\nany text to encode.",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true
           },
           "truncate": {
             "type": "boolean",
-            "default": "false",
-            "example": "false",
+            "default": false,
+            "example": false,
             "nullable": true
           },
           "truncation_direction": {
@@ -1040,11 +1040,7 @@
         },
         "example": [
           [
-            [
-              0.0,
-              1.0,
-              2.0
-            ]
+            [0, 1, 2]
           ]
         ]
       },
@@ -1057,8 +1053,8 @@
           "dimensions": {
             "type": "integer",
             "description": "The number of dimensions that the output embeddings should have. If not set, the original\nshape of the representation will be returned instead.",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true,
             "minimum": 0
           },
@@ -1067,20 +1063,20 @@
           },
           "normalize": {
             "type": "boolean",
-            "default": "true",
-            "example": "true"
+            "default": true,
+            "example": true
           },
           "prompt_name": {
             "type": "string",
             "description": "The name of the prompt that should be used by for encoding. If not set, no prompt\nwill be applied.\n\nMust be a key in the `sentence-transformers` configuration `prompts` dictionary.\n\nFor example if ``prompt_name`` is \"query\" and the ``prompts`` is {\"query\": \"query: \", ...},\nthen the sentence \"What is the capital of France?\" will be encoded as\n\"query: What is the capital of France?\" because the prompt text will be prepended before\nany text to encode.",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true
           },
           "truncate": {
             "type": "boolean",
-            "default": "false",
-            "example": "false",
+            "default": false,
+            "example": false,
             "nullable": true
           },
           "truncation_direction": {
@@ -1103,11 +1099,7 @@
           }
         },
         "example": [
-          [
-            0.0,
-            1.0,
-            2.0
-          ]
+          [0, 1, 2]
         ]
       },
       "EmbedSparseRequest": {
@@ -1122,14 +1114,14 @@
           "prompt_name": {
             "type": "string",
             "description": "The name of the prompt that should be used by for encoding. If not set, no prompt\nwill be applied.\n\nMust be a key in the `sentence-transformers` configuration `prompts` dictionary.\n\nFor example if ``prompt_name`` is \"query\" and the ``prompts`` is {\"query\": \"query: \", ...},\nthen the sentence \"What is the capital of France?\" will be encoded as\n\"query: What is the capital of France?\" because the prompt text will be prepended before\nany text to encode.",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true
           },
           "truncate": {
             "type": "boolean",
-            "default": "false",
-            "example": "false",
+            "default": false,
+            "example": false,
             "nullable": true
           },
           "truncation_direction": {
@@ -1230,13 +1222,13 @@
           },
           "docker_label": {
             "type": "string",
-            "example": "null",
+            "example": null,
             "nullable": true
           },
           "max_batch_requests": {
             "type": "integer",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true,
             "minimum": 0
           },
@@ -1280,7 +1272,7 @@
           },
           "sha": {
             "type": "string",
-            "example": "null",
+            "example": null,
             "nullable": true
           },
           "tokenization_workers": {
@@ -1434,8 +1426,8 @@
         "properties": {
           "dimensions": {
             "type": "integer",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true,
             "minimum": 0
           },
@@ -1452,12 +1444,12 @@
           },
           "model": {
             "type": "string",
-            "example": "null",
+            "example": null,
             "nullable": true
           },
           "user": {
             "type": "string",
-            "example": "null",
+            "example": null,
             "nullable": true
           }
         }
@@ -1565,13 +1557,13 @@
           },
           "raw_scores": {
             "type": "boolean",
-            "default": "false",
-            "example": "false"
+            "default": false,
+            "example": false
           },
           "truncate": {
             "type": "boolean",
-            "default": "false",
-            "example": "false",
+            "default": false,
+            "example": false,
             "nullable": true
           },
           "truncation_direction": {
@@ -1640,7 +1632,7 @@
           },
           "text": {
             "type": "string",
-            "default": "null",
+            "default": null,
             "example": "Deep Learning is ...",
             "nullable": true
           }
@@ -1659,13 +1651,13 @@
           },
           "raw_scores": {
             "type": "boolean",
-            "default": "false",
-            "example": "false"
+            "default": false,
+            "example": false
           },
           "return_text": {
             "type": "boolean",
-            "default": "false",
-            "example": "false"
+            "default": false,
+            "example": false
           },
           "texts": {
             "type": "array",
@@ -1678,8 +1670,8 @@
           },
           "truncate": {
             "type": "boolean",
-            "default": "false",
-            "example": "false",
+            "default": false,
+            "example": false,
             "nullable": true
           },
           "truncation_direction": {
@@ -1728,14 +1720,14 @@
           "prompt_name": {
             "type": "string",
             "description": "The name of the prompt that should be used by for encoding. If not set, no prompt\nwill be applied.\n\nMust be a key in the `sentence-transformers` configuration `prompts` dictionary.\n\nFor example if ``prompt_name`` is \"query\" and the ``prompts`` is {\"query\": \"query: \", ...},\nthen the sentence \"What is the capital of France?\" will be encoded as\n\"query: What is the capital of France?\" because the prompt text will be prepended before\nany text to encode.",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true
           },
           "truncate": {
             "type": "boolean",
-            "default": "false",
-            "example": "false",
+            "default": false,
+            "example": false,
             "nullable": true
           },
           "truncation_direction": {
@@ -1763,7 +1755,7 @@
                 "$ref": "#/components/schemas/SimilarityParameters"
               }
             ],
-            "default": "null",
+            "default": null,
             "nullable": true
           }
         }
@@ -1774,11 +1766,7 @@
           "type": "number",
           "format": "float"
         },
-        "example": [
-          0.0,
-          1.0,
-          0.5
-        ]
+        "example": [0, 1, 0.5]
       },
       "SimpleToken": {
         "type": "object",
@@ -1796,7 +1784,7 @@
           },
           "special": {
             "type": "boolean",
-            "example": "false"
+            "example": false
           },
           "start": {
             "type": "integer",
@@ -1854,8 +1842,8 @@
         "properties": {
           "add_special_tokens": {
             "type": "boolean",
-            "default": "true",
-            "example": "true"
+            "default": true,
+            "example": true
           },
           "inputs": {
             "$ref": "#/components/schemas/TokenizeInput"
@@ -1863,8 +1851,8 @@
           "prompt_name": {
             "type": "string",
             "description": "The name of the prompt that should be used by for encoding. If not set, no prompt\nwill be applied.\n\nMust be a key in the `sentence-transformers` configuration `prompts` dictionary.\n\nFor example if ``prompt_name`` is \"query\" and the ``prompts`` is {\"query\": \"query: \", ...},\nthen the sentence \"What is the capital of France?\" will be encoded as\n\"query: What is the capital of France?\" because the prompt text will be prepended before\nany text to encode.",
-            "default": "null",
-            "example": "null",
+            "default": null,
+            "example": null,
             "nullable": true
           }
         }
