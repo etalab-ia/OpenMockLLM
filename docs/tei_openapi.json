@@ -1880,8 +1880,8 @@
       "TruncationDirection": {
         "type": "string",
         "enum": [
-          "Left",
-          "Right"
+          "left",
+          "right"
         ]
       }
     }
