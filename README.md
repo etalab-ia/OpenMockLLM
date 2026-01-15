@@ -5,7 +5,7 @@ A FastAPI-based mock LLM API server that simulates multiple Large Language Model
 Supported backends:
 | Backend | Endpoints |
 | --- | --- |
-| [vLLM](https://github.com/vllm-project/vllm) |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings<br>• /health |
+| [vLLM](https://github.com/vllm-project/vllm) |• /v1/chat/completions<br>• /v1/models<br>• /health |
 | [Mistral](https://mistral.ai/) |• /v1/chat/completions<br>• /v1/models<br>• /v1/embeddings |
 | [Text Embeddings Inference](https://github.com/huggingface/text-embeddings-inference) |• /v1/embeddings<br>• /health<br>• /info<br>• /rerank |
 
