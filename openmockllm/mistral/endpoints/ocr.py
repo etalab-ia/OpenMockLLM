@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 from mistralai.models import OCRImageObject, OCRPageDimensions, OCRPageObject, OCRRequest, OCRResponse, OCRUsageInfo
 
+from openmockllm.mistral.utils.common import check_model_not_found
 from openmockllm.security import check_api_key
 from openmockllm.utils import generate_unstreamed_chat_content, get_base64_jpeg_image
 
@@ -9,6 +10,8 @@ router = APIRouter(prefix="/v1", tags=["models"])
 
 @router.post(path="/ocr", dependencies=[Depends(dependency=check_api_key)])
 async def ocr(request: Request, body: OCRRequest) -> OCRResponse:
+    check_model_not_found(called_model=body.model, current_model=request.app.state.model_name)
+
     content = await generate_unstreamed_chat_content(prompt="Lorem ipsum dolor sit amet, consectetur adipiscing elit.", max_tokens=1000)
     image = get_base64_jpeg_image()
 

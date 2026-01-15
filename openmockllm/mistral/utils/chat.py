@@ -46,13 +46,7 @@ async def generate_stream(request: Request, body: ChatCompletionRequest):
             chunk = CompletionChunk(
                 id="baf234d63e524e74b25c2d764b043bc2",
                 model=request.app.state.model_name,
-                choices=[
-                    CompletionResponseStreamChoice(
-                        index=0,
-                        delta=DeltaMessage(role=None, content=""),
-                        finish_reason="stop",
-                    )
-                ],
+                choices=[CompletionResponseStreamChoice(index=i, delta=DeltaMessage(role=None, content=""), finish_reason="stop")],
             )
             # Format as SSE: data: <json>\n\n
             yield f"data: {chunk.model_dump_json()}\n\n"
@@ -63,13 +57,7 @@ async def generate_stream(request: Request, body: ChatCompletionRequest):
         chunk = CompletionChunk(
             id="baf234d63e524e74b25c2d764b043bc2",
             model=request.app.state.model_name,
-            choices=[
-                CompletionResponseStreamChoice(
-                    index=0,
-                    delta=DeltaMessage(role=role, content=chunk_text),
-                    finish_reason=None,
-                )
-            ],
+            choices=[CompletionResponseStreamChoice(index=i, delta=DeltaMessage(role=role, content=chunk_text), finish_reason=None)],
         )
         # Format as SSE: data: <json>\n\n
         yield f"data: {chunk.model_dump_json()}\n\n"

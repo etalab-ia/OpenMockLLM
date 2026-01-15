@@ -1,5 +1,6 @@
 import httpx
 from mistralai import Mistral
+from openai import AsyncOpenAI, OpenAI
 import pytest
 import pytest_asyncio
 
@@ -21,3 +22,21 @@ def tei_client():
     yield client
 
     client.close()
+
+
+@pytest.fixture
+def vllm_client():
+    """Create an OpenAI client for testing vLLM backend (OpenAI compatible)"""
+    client = OpenAI(api_key="test-key", base_url="http://localhost:8000/v1")
+
+    yield client
+
+
+@pytest_asyncio.fixture
+async def vllm_async_client():
+    """Create an async OpenAI client for testing vLLM backend"""
+    client = AsyncOpenAI(api_key="test-key", base_url="http://localhost:8000/v1")
+
+    yield client
+
+    await client.close()

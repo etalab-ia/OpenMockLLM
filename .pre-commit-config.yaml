@@ -7,8 +7,8 @@ repos:
       - id: ruff
         types_or: [ python, pyi ]
         args: [ --fix ]
-        exclude: '^openmockllm/tei/schemas\.py$'
+        exclude: '^openmockllm/.*/schemas'
       # Run the formatter.
       - id: ruff-format
         types_or: [ python, pyi ]
-        exclude: 'openmockllm/tei/schemas\.py'  # Exclure le fichier généré
+        exclude: '^openmockllm/.*/schemas'

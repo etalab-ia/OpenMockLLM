@@ -68,7 +68,7 @@ def create_app(args):
 
     # Include routers based on backend
     if args.backend == "vllm":
-        from openmockllm.vllm.endpoints import chat, embeddings, health, models
+        from openmockllm.vllm.endpoints import chat, health, models
         from openmockllm.vllm.exceptions import VLLMException, general_exception_handler, vllm_exception_handler
 
         # Add exception handlers
@@ -78,7 +78,6 @@ def create_app(args):
         # Add routers (prefixes are defined in the router instances)
         app.include_router(chat.router)
         app.include_router(models.router)
-        app.include_router(embeddings.router)
         app.include_router(health.router)
         logger.info("Loaded vllm backend with all endpoints")
 

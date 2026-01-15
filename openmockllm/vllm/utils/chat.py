@@ -1,18 +1,41 @@
-import asyncio
-from collections.abc import AsyncGenerator
-import json
-import random
-import time
-import uuid
-
 from faker import Faker
+from fastapi import Request
 import tiktoken
 
 from openmockllm.settings import settings
+from openmockllm.utils import generate_stream_chat_content
+from openmockllm.vllm.schemas import ChatCompletionRequest
+from openmockllm.vllm.schemas.chat import (
+    ChatStreamResponse,
+    ChatStreamResponseChoice,
+    StreamDelta,
+)
 
 tokenizer = tiktoken.get_encoding(settings.tiktoken_encoder)
 fake = Faker(settings.faker_langage)
 fake.seed_instance(settings.faker_seed)
+
+
+def extract_prompt(content: str | list | None) -> str:
+    """
+    Normalize vLLM message content to a plain text prompt.
+
+    The SDK allows either:
+    - a single string
+    - a list of "content chunks" (e.g. text, input_audio, image_url, ...)
+    """
+    prompt = ""
+
+    if isinstance(content, str):
+        prompt = content
+
+    if isinstance(content, list):
+        prompt = ""
+        for chunk in content:
+            if "text" == chunk.type:
+                prompt += chunk.text
+
+    return prompt
 
 
 def count_tokens(text: str) -> int:
@@ -23,85 +46,35 @@ def check_max_context_length(prompt: str, max_context_length: int) -> int:
     return len(tokenizer.encode(prompt)) <= max_context_length
 
 
-def generate_random_response(user_message: str, temperature: float | None = 0.7, max_tokens: int | None = 1000) -> str:
-    max_tokens = max_tokens if max_tokens is not None else random.randint(100, 1000)
-    temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
-    prompt_token_count = count_tokens(user_message)
+async def generate_stream(request: Request, body: ChatCompletionRequest):
+    """Generate streaming response chunks in SSE format"""
 
-    base_paragraphs = 1 + temperature * 5
-    prompt_factor = 1 + (prompt_token_count / 100) * 0.5
-    num_paragraphs = int(base_paragraphs * min(prompt_factor, 2.0))
+    prompt = "\n\n".join([extract_prompt(content=msg.content) for msg in body.messages])
+    i = 0
 
-    base_target = max_tokens * 4
-    adjusted_target = int(base_target * min(prompt_factor, 1.5))
-    target_length = min(adjusted_target, 8000)
+    async for chunk_text in generate_stream_chat_content(prompt=prompt, max_tokens=body.max_tokens):
+        # Check if this is the final "[DONE]" chunk
+        # The generator sends "[DONE]\n\n" as the final chunk
+        if "[DONE]" in chunk_text:
+            # Send final chunk with finish_reason
+            chunk = ChatStreamResponse(
+                id="baf234d63e524e74b25c2d764b043bc2",
+                model=request.app.state.model_name,
+                created=0,
+                choices=[ChatStreamResponseChoice(index=i, delta=StreamDelta(role=None, content=""), finish_reason="stop")],
+            )
+            # Format as SSE: data: <json>\n\n
+            yield f"data: {chunk.model_dump_json()}\n\n"
+            break
 
-    response_parts = []
-    current_length = 0
-
-    while current_length < target_length and len(response_parts) < num_paragraphs:
-        text = fake.paragraph(nb_sentences=random.randint(1, 7))
-        response_parts.append(text)
-        current_length += len(text)
-
-    return "\n\n".join(response_parts)
-
-
-def calculate_realistic_delay(completion_tokens: int, temperature: float | None = 0.7) -> float:
-    temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
-    tokens_per_second = 35 - (temperature * 10)
-
-    base_delay = completion_tokens / tokens_per_second
-
-    startup_delay = random.uniform(0.1, 0.3)
-
-    variation = random.uniform(0.85, 1.15)
-
-    total_delay = (base_delay + startup_delay) * variation
-
-    return max(0.1, total_delay)
-
-
-async def generate_stream_response(response_text: str, model: str, temperature: float | None = 0.7) -> AsyncGenerator[str, None]:
-    chunk_id = f"chatcmpl-{uuid.uuid4().hex[:8]}"
-    temperature = temperature if temperature is not None else random.uniform(0.5, 1.0)
-    created = int(time.time())
-
-    tokens_per_second = 35 - (temperature * 10)
-    token_delay = 1.0 / tokens_per_second
-
-    first_chunk = {
-        "id": chunk_id,
-        "object": "chat.completion.chunk",
-        "created": created,
-        "model": model,
-        "choices": [{"index": 0, "delta": {"role": "assistant"}, "finish_reason": None}],
-    }
-    yield f"data: {json.dumps(first_chunk)}\n\n"
-
-    token_ids = tokenizer.encode(response_text)
-
-    for token_id in token_ids:
-        token_text = tokenizer.decode([token_id])
-
-        chunk = {
-            "id": chunk_id,
-            "object": "chat.completion.chunk",
-            "created": created,
-            "model": model,
-            "choices": [{"index": 0, "delta": {"content": token_text}, "finish_reason": None}],
-        }
-        yield f"data: {json.dumps(chunk)}\n\n"
-
-        await asyncio.sleep(token_delay)
-
-    final_chunk = {
-        "id": chunk_id,
-        "object": "chat.completion.chunk",
-        "created": created,
-        "model": model,
-        "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}],
-    }
-    yield f"data: {json.dumps(final_chunk)}\n\n"
-
-    yield "data: [DONE]\n\n"
+        # Regular content chunk
+        role = "assistant" if i == 0 else None
+        chunk = ChatStreamResponse(
+            id="baf234d63e524e74b25c2d764b043bc2",
+            model=request.app.state.model_name,
+            created=0,
+            choices=[ChatStreamResponseChoice(index=i, delta=StreamDelta(role=role, content=chunk_text), finish_reason=None)],
+        )
+        # Format as SSE: data: <json>\n\n
+        yield f"data: {chunk.model_dump_json()}\n\n"
+        i += 1

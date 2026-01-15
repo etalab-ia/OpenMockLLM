@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request
 
 from openmockllm.logger import init_logger
 from openmockllm.security import check_api_key
+from openmockllm.utils import count_tokens
 from openmockllm.vllm.exceptions import NotFoundError
 from openmockllm.vllm.schemas.embeddings import (
     EmbeddingData,
@@ -34,15 +35,26 @@ async def create_embeddings(request: Request, body: EmbeddingRequest):
     # Use dimensions from request or fall back to default
     dimensions = body.dimensions or request.app.state.embedding_dimension
 
+    # Use encoding format from request
+    encoding_format = body.encoding_format or "float"
+
+    # Calculate token usage
+    total_tokens = sum(count_tokens(text) for text in inputs)
+
     # Generate mock embeddings
     embeddings_data = [
-        EmbeddingData(object="embedding", index=i, embedding=generate_mock_embedding(dimension=dimensions)) for i in range(len(inputs))
+        EmbeddingData(
+            object="embedding",
+            index=i,
+            embedding=generate_mock_embedding(dimension=dimensions, encoding_format=encoding_format),
+        )
+        for i in range(len(inputs))
     ]
 
     response = EmbeddingResponse(
         object="list",
         data=embeddings_data,
         model=model,
-        usage=EmbeddingUsage(prompt_tokens=0, total_tokens=0),
+        usage=EmbeddingUsage(prompt_tokens=total_tokens, total_tokens=total_tokens),
     )
     return response
