@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from mistralai.models import OCRImageObject, OCRPageDimensions, OCRPageObject, OCRRequest, OCRResponse, OCRUsageInfo
+from mistralai.client.models import OCRImageObject, OCRPageDimensions, OCRPageObject, OCRRequest, OCRResponse, OCRUsageInfo
 
 from openmockllm.mistral.utils.common import check_model_not_found
 from openmockllm.security import check_api_key

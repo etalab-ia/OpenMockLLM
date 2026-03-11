@@ -1,4 +1,4 @@
-from mistralai.models import ChatCompletionRequest as MistralChatCompletionRequest
+from mistralai.client.models import ChatCompletionRequest as MistralChatCompletionRequest
 from pydantic import ConfigDict
 
 

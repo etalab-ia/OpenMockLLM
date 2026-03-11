@@ -1,7 +1,7 @@
 import time
 
 from fastapi import Request
-from mistralai.models import ChatCompletionRequest, CompletionChunk, CompletionResponseStreamChoice, DeltaMessage
+from mistralai.client.models import ChatCompletionRequest, CompletionChunk, CompletionResponseStreamChoice, DeltaMessage
 from mistralai.types.basemodel import Unset
 
 from openmockllm.utils import generate_stream_chat_content

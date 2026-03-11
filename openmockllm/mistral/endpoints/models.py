@@ -1,7 +1,7 @@
 import time
 
 from fastapi import APIRouter, Depends, Request
-from mistralai.models import BaseModelCard, ModelCapabilities, ModelList
+from mistralai.client.models import BaseModelCard, ModelCapabilities, ModelList
 
 from openmockllm.logger import init_logger
 from openmockllm.security import check_api_key

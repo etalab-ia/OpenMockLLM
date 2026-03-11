@@ -2,7 +2,7 @@ import time
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
-from mistralai.models import AssistantMessage, ChatCompletionChoice, ChatCompletionResponse, UsageInfo
+from mistralai.client.models import AssistantMessage, ChatCompletionChoice, ChatCompletionResponse, UsageInfo
 from mistralai.types.basemodel import Unset
 
 from openmockllm.mistral.schemas import ChatCompletionRequest
