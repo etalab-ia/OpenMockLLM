@@ -6,6 +6,7 @@ class Model(BaseModel):
     object: str = "model"
     created: int
     owned_by: str
+    max_model_len: int
 
 
 class ModelsResponse(BaseModel):
