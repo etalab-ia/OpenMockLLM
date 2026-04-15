@@ -25,6 +25,7 @@ async def list_models(request: Request):
                 object="model",
                 created=int(time.time()),
                 owned_by=owned_by,
+                max_model_len=2000
             )
         ],
     )
